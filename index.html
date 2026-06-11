@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAIST Phone Refugees</title>
     <style>
+        /* 1. 배경을 아예 완벽한 검은색(#000)으로 변경 */
         body { 
-            background-color: #0f172a; 
+            background-color: #000000; 
             color: #fff; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             display: flex;
@@ -18,142 +19,138 @@
             box-sizing: border-box;
         }
 
-        /* 3D 민트색 공중전화부스 */
+        /* 2. 빨간색 공중전화부스 "내부"에 들어온 듯한 3D 공간감 */
         .booth { 
             width: 100%;
-            max-width: 430px; 
-            background: linear-gradient(135deg, #4da6a6, #2d6a6a); /* 민트색 그라데이션 */
-            border-radius: 40px; /* 라운드 형태 강조 */
-            padding: 30px 25px;
+            max-width: 420px; 
+            height: 680px;
+            /* 부스 안쪽의 어두운 붉은 벽면 느낌의 그라데이션 */
+            background: linear-gradient(180deg, #3a0d0d, #1a0505);
+            /* 부스를 감싸는 두껍고 강렬한 빨간색 프레임 외벽 */
+            border: 16px solid #dc2626; 
+            border-radius: 30px; 
+            box-shadow: 
+                0 0 50px rgba(220, 38, 38, 0.3),
+                inset 0 0 30px rgba(0, 0, 0, 0.9); /* 내부 그림자로 깊이감 부여 */
+            padding: 40px 25px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.6),
-                inset 5px 5px 15px rgba(255,255,255,0.3),  /* 3D 볼륨감 하이라이트 */
-                inset -5px -5px 15px rgba(0,0,0,0.3);
-            border: 4px solid #3d8b8b;
+            position: relative;
         }
 
-        /* TELEPHONE 간판 및 알파벳 개별 스타일 */
+        /* 부스 상단 내부 유리창 틀 장식 */
+        .booth-window {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 80px;
+            pointer-events: none; /* 클릭 방해 금지 */
+        }
+
+        /* TELEPHONE 내부 간판 및 알파벳 */
         .booth-sign {
-            background-color: #1a3a3a;
-            width: 90%;
+            background-color: #110303;
+            width: 100%;
             text-align: center;
-            padding: 12px 0;
-            border-radius: 15px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
-            margin-bottom: 25px;
+            padding: 14px 0;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);
             display: flex;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
+            z-index: 5;
         }
 
         .letter {
             font-weight: 900;
-            font-size: 24px;
+            font-size: 26px;
             letter-spacing: 1px;
-            color: #2a4a4a; /* 기본 꺼진 상태 (어두운 색) */
-            transition: all 0.4s ease;
-            text-shadow: none;
+            color: #3a1515; /* 기본 꺼진 상태 (어두운 주홍빛 고스트 색상) */
+            transition: all 0.3s ease;
         }
 
-        /* 불 켜진 알파벳 스타일 */
+        /* 7개마다 불 켜지는 효과 */
         .letter.active {
-            color: #fffb00; /* 환한 노란색 */
-            text-shadow: 0 0 10px #ffea00, 0 0 20px #ffaa00;
+            color: #ffcc00; /* 클래식한 노란 공중전화 조명 조도 */
+            text-shadow: 0 0 12px #ffbb00, 0 0 25px #ff7700;
         }
 
-        /* 전화기 본체 */
+        /* 부스 벽에 걸린 아날로그 전화기 본체 */
         .phone-machine {
             width: 90%;
-            background: #222;
-            border-radius: 20px;
-            padding: 20px;
+            background: linear-gradient(135deg, #262626, #171717);
+            border-radius: 25px;
+            padding: 30px 20px;
             box-sizing: border-box;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.1);
-            border: 2px solid #333;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.7), 
+                inset 0 2px 4px rgba(255,255,255,0.1);
+            border: 3px solid #404040;
+            text-align: center;
+            z-index: 5;
+            margin-bottom: 20px;
         }
 
-        h1 { color: #22d3ee; font-size: 20px; margin: 0 0 5px 0; text-align: center; }
-        .subtitle { color: #94a3b8; font-size: 13px; margin: 0 0 20px 0; text-align: center; }
+        h1 { color: #f8fafc; font-size: 22px; margin: 0 0 6px 0; font-weight: 800; letter-spacing: -0.5px; }
+        .subtitle { color: #737373; font-size: 13px; margin: 0 0 25px 0; font-weight: 500; }
 
-        /* 토큰 디스플레이 (계측기 화면 느낌) */
+        /* 토큰 수량 디스플레이 */
         .display { 
             background-color: #022c22; 
             border: 2px solid #065f46;
-            border-radius: 10px;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 26px; 
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 28px; 
             font-weight: bold; 
             color: #34d399; 
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.8);
+            text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
         }
 
-        /* 황금 토큰 버튼 */
+        /* 황금빛 동전 투입구 버튼 (절대 레이어 배치로 클릭 에러 방지) */
         .btn-token { 
-            background: linear-gradient(135deg, #fbbf24, #b45309);
+            background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
-            border: none; 
+            border: 2px solid #b45309; 
             width: 100%;
-            padding: 15px 0; 
-            font-size: 16px; 
-            font-weight: bold; 
-            border-radius: 10px; 
+            padding: 18px 0; 
+            font-size: 18px; 
+            font-weight: 800; 
+            border-radius: 12px; 
             cursor: pointer; 
-            transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(180, 83, 9, 0.3);
+            transition: all 0.15s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 10; /* 가장 위에 두어 무조건 클릭되도록 설정 */
         }
-        .btn-token:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(250, 204, 21, 0.4); }
-        .btn-token:active { transform: translateY(1px); }
-
-        /* 영수증(메시지 리스트) 나오는 구멍 디자인 */
-        .receipt-slot {
-            width: 90%;
-            height: 6px;
-            background-color: #000;
-            margin: 25px auto 0 auto;
-            border-radius: 3px;
-            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        .btn-token:hover { 
+            transform: translateY(-2px); 
+            background: linear-gradient(135deg, #fef08a, #f59e0b);
+            box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3);
         }
-
-        /* 찌리릭 나오는 영수증 보드 */
-        .receipt-paper {
-            width: 85%;
-            background-color: #f8fafc;
-            color: #334155;
-            border-radius: 0 0 10px 10px;
-            padding: 15px;
-            box-sizing: border-box;
-            max-height: 180px;
-            overflow-y: auto;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            font-size: 13px;
-            font-family: monospace;
-            border-top: 1px dashed #cbd5e1;
-            animation: slideDown 0.5s ease-out;
+        .btn-token:active { 
+            transform: translateY(1px); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
-        @keyframes slideDown {
-            from { max-height: 0; padding-top: 0; padding-bottom: 0; }
-            to { max-height: 180px; }
+        .hint {
+            color: #525252;
+            font-size: 12px;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
         }
-
-        .msg-item {
-            border-bottom: 1px dotted #cbd5e1;
-            padding: 6px 0;
-            line-height: 1.4;
-        }
-        .msg-item:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
 
     <div class="booth">
+        <div class="booth-window"></div>
+
         <div class="booth-sign" id="signBoard">
             <span class="letter">T</span>
             <span class="letter">E</span>
@@ -168,56 +165,55 @@
         
         <div class="phone-machine">
             <h1>KAIST PHONE REFUGEES</h1>
-            <div class="subtitle">Digital Escape Archive</div>
+            <div class="subtitle">Midterm Escape Station</div>
             
             <div class="display">🪙 TOKENS: <span id="count">0</span></div>
             
             <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
+            
+            <div class="hint">Drop a token to check in your escape.</div>
         </div>
 
-        <div class="receipt-slot"></div>
-        <div class="receipt-paper" id="msgBoard">
-            <div style="text-align: center; color: #94a3b8; font-size: 11px;">[ Archived Solitudes ]</div>
-        </div>
+        <div style="color: #525252; font-size: 11px; font-weight: 600; letter-spacing: 2px;">INSIDE THE BOOTH</div>
     </div>
 
     <script>
-        // 새로고침해도 데이터 유지 (초기값 토큰 0개)
+        // 새로고침 해도 숫자 기억 (초기값 0개)
         let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
-        let savedMessages = localStorage.getItem('phoneMsgs') ? JSON.parse(localStorage.getItem('phoneMsgs')) : [];
         
+        // 초기화 시 기존 스코어에 맞춰 글자 불 켜기
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
-        renderMessages();
 
+        // 3. 메시지 입력창 완전히 제거된 순수 토큰 드롭 기능
         function dropToken() {
-            // 3번 아이디어: 지정된 텍스트로 질문 창 띄우기
-            let userMsg = prompt("How was your day?");
-            
-            // 취소 버튼을 누르거나 아무것도 안 적었을 때 예외 처리
-            if (userMsg === null) return; 
-            if (userMsg.trim() === "") userMsg = "Left a silent token.";
-
-            // 데이터 증가 및 저장
             currentCount += 1;
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
             
-            savedMessages.unshift(userMsg); // 최신 메시지가 위로 오게 저장
-            localStorage.setItem('phoneMsgs', JSON.stringify(savedMessages));
-
-            // 인터랙션 업데이트
+            // 전구 업데이트 실행
             updateLights(currentCount);
-            renderMessages();
             
+            // 깔끔한 알림 팝업
             alert("🪙 Clink! You made it through another day.");
         }
 
-        // 7개 누적될 때마다 한 글자씩 불을 켜주는 함수
+        // 7개당 한 글자씩 활성화해 주는 전구 함수
         function updateLights(count) {
             const letters = document.querySelectorAll('.letter');
-            // 예: count가 14면 14 / 7 = 2글자 불 켜짐
             let litCount = Math.floor(count / 7); 
+            
+            letters.forEach((letter, index) => {
+                if (index < litCount) {
+                    letter.classList.add('active');
+                } else {
+                    letter.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
             
             letters.forEach((letter, index) => {
                 if (index < litCount)
