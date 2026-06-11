@@ -69,7 +69,7 @@
         .w-reg  { width: 58px; }
         .w-wide { width: 78px; }
 
-        /* 조도 유지 처리된 미드톤 그레이 스케일 서적 */
+        /* 명도 조절된 미드톤 그레이 스케일 서적 */
         .c-1 { background-color: #2b2b2b; } 
         .c-2 { background-color: #383838; }
         .c-3 { background-color: #454545; }
@@ -176,7 +176,7 @@
             position: absolute;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             font-weight: 300; 
-            font-size: 11px;
+            font-size: 14px; /* 👈 2번 수정: 폰트 크기를 14px로 대폭 키워 가독성 상향 */
             color: #ffffff; 
             letter-spacing: 1px;
             white-space: nowrap;
@@ -233,29 +233,40 @@
     </div>
 
     <script>
-        // 새로고침 해도 토큰과 흔적이 완벽히 누적되어 이어짐
         let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
         
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
+        /* 📞 1번 수정: 전화 통화의 흐름이 느껴지도록 질문과 답변의 비중을 정확히 1:1(6개 대 6개)로 맞춤 조율 */
         const phoneWords = [
-            "I'm doing well. And you?", "Same old, same old.", "Not too bad, thanks.",
-            "Surviving, barely.", "Could be better.", "Just hanging in there.",
-            "Exhausted but okay.", "Pretty good, actually.", "Missing home a bit.",
-            "Just need a break.", "Hang on, talk tomorrow.", "Yeah, I'm staying up."
+            // 안부 묻는 질문 (Questions - 6개)
+            "How have you been?",
+            "Are you doing okay?",
+            "How's everything over there?",
+            "Are you getting enough sleep?",
+            "How's your week going?",
+            "Everything good with you?",
+            
+            // 안부 답하는 표현 (Answers - 6개)
+            "I'm doing well. And you?",
+            "Same old, same old.",
+            "Surviving, barely.",
+            "Just hanging in there.",
+            "Exhausted but okay.",
+            "Just need a break."
         ];
         
         let particles = [];
 
-        // 페이지 진입 시 저장되어 있던 기존 텍스트 무덤 완벽 복원
+        // 페이지 진입 시 기존 텍스트 무덤 복원
         window.addEventListener('DOMContentLoaded', () => {
             let savedParticles = localStorage.getItem('phoneParticles') ? JSON.parse(localStorage.getItem('phoneParticles')) : [];
             savedParticles.forEach(sp => {
                 reconstructParticle(sp.text, sp.x, sp.y, sp.angle);
             });
             
-            // 💡 이스터 에그 매핑: 주변의 흑백 책 중 아무거나 클릭하면 아카이브 '마스터 리셋' 수행
+            // 주변의 흑백 책 클릭 시 마스터 리셋 수행 (전체 고요화 이스터 에그)
             document.querySelectorAll('.giant-book').forEach(book => {
                 book.addEventListener('click', () => {
                     currentCount = 0;
@@ -276,7 +287,6 @@
         function dropToken() {
             currentCount += 1;
             
-            // 💡 변경 사항: 9글자가 다 차도 초기화(삭제) 코드는 완전 삭제함. 토큰과 대화는 무한 누적됨.
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
             
@@ -286,11 +296,10 @@
             alert("🪙 Clink! You made it through another day.");
         }
 
-        // 💡 변경 사항: 3개씩 불이 들어오며, 27개(다 켜짐) 이후 28번째에 불만 다 꺼지고 다시 루프 도는 연산
+        // 3의 배수로 불이 켜지며, 28번째에 무한 루프 도는 연산 유지
         function updateLights(count) {
             const letters = document.querySelectorAll('.letter');
             
-            // 27개에서 다 켜진 후, 28번째 토큰이 투입되는 순간 불만 다 다시 꺼지게 처리 (% 28 연산)
             let effectiveCount = count % 28; 
             let litCount = Math.floor(effectiveCount / 3); 
             
@@ -317,8 +326,8 @@
                 vy: 15, 
                 angle: Math.random() * 8 - 4,     
                 va: Math.random() * 2 - 1,          
-                radiusH: 55, 
-                radiusV: 12,
+                radiusH: 60, /* 14px 글자 스케일에 맞춘 최적의 가로 충돌 크기 반경 고정 */
+                radiusV: 14, /* 14px 글자 스케일에 맞춘 최적의 세로 충돌 크기 반경 고정 */
                 isSleeping: false            
             });
         }
@@ -337,7 +346,7 @@
                 el: el,
                 text: text,
                 x: x, y: y, vx: 0, vy: 0, angle: angle, va: 0,
-                radiusH: 55, radiusV: 12
+                radiusH: 60, radiusV: 14
             });
         }
 
@@ -362,7 +371,6 @@
                 if (p.x < 70) { p.x = 70; p.vx = -p.vx * 0.1; }
                 if (p.x > 350) { p.x = 350; p.vx = -p.vx * 0.1; }
 
-                // 쫀득하고 덜컹거리며 안착하는 바닥 마찰 피지컬 바인딩
                 if (p.y > floorY) {
                     p.y = floorY;
                     p.vy = -p.vy * 0.02; 
@@ -371,7 +379,6 @@
                     p.isSleeping = true;
                 }
 
-                // 글자 상호 간 겹침 방지 및 부드러운 산형 밀어내기 연산
                 for (let j = 0; j < particles.length; j++) {
                     if (i === j) continue;
                     let other = particles[j];
@@ -382,7 +389,7 @@
                     let vDist = Math.abs(dy);
 
                     let minH = (p.radiusH + other.radiusH) * 0.62;
-                    let minV = 15; 
+                    let minV = 17; /* 14px 글씨 크기에 비례하여 겹침 방지 간격 고도화 */
 
                     if (hDist < minH && vDist < minV) {
                         let overlapX = minH - hDist;
