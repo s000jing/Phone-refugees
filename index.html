@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAIST Phone Refugees</title>
     <style>
-        /* 배경 검은색 유지 및 폰트를 Helvetica로 전면 교체 */
         body { 
             background-color: #000000; 
             color: #fff; 
@@ -15,21 +14,17 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+            overflow: hidden; 
         }
 
-        /* 빨간색 공중전화부스 내부 투시 프레임 */
         .booth { 
             width: 100%;
             max-width: 420px; 
             height: 680px;
-            background: linear-gradient(180deg, #3a0d0d, #1a0505);
+            background: linear-gradient(180deg, #2a0808, #000000);
             border: 16px solid #dc2626; 
-            border-radius: 30px; 
-            box-shadow: 
-                0 0 50px rgba(220, 38, 38, 0.3),
-                inset 0 0 30px rgba(0, 0, 0, 0.9); 
+            border-radius: 40px; 
+            box-shadow: 0 0 50px rgba(220, 38, 38, 0.2), inset 0 0 40px rgba(0, 0, 0, 1); 
             padding: 40px 25px;
             box-sizing: border-box;
             display: flex;
@@ -37,157 +32,154 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
+            z-index: 1;
         }
 
-        /* 부스 상단 내부 유리창 틀 장식 */
-        .booth-window {
+        /* 전화 소리 파편들이 쌓일 레이어 */
+        #word-layer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 100% 80px;
-            pointer-events: none; 
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 2;
         }
 
-        /* TELEPHONE 내부 간판 */
+        .floating-word {
+            position: absolute;
+            font-weight: 200; /* 초슬림 Helvetica 무드 */
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 0.35; transform: scale(1); }
+        }
+
+        h1 { 
+            font-size: 20px; 
+            margin: 0 0 6px 0; 
+            font-weight: 200; 
+            letter-spacing: 2px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .subtitle { 
+            color: #737373; 
+            font-size: 11px; 
+            margin: 0 0 25px 0; 
+            font-weight: 300; 
+            letter-spacing: 1px;
+            text-align: center;
+            z-index: 10;
+        }
+
         .booth-sign {
             background-color: #110303;
             width: 100%;
             text-align: center;
             padding: 14px 0;
-            border-radius: 10px;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);
+            border-radius: 12px;
             display: flex;
             justify-content: center;
             gap: 6px;
-            z-index: 5;
+            z-index: 10;
         }
 
         .letter {
-            font-weight: 400;
-            font-size: 26px;
-            letter-spacing: 1px;
+            font-weight: 900;
+            font-size: 24px;
             color: #3a1515; 
             transition: all 0.3s ease;
         }
 
-        /* 7개마다 불 켜지는 네온 효과 */
         .letter.active {
             color: #ffcc00; 
-            text-shadow: 0 0 12px #ffbb00, 0 0 25px #ff7700;
+            text-shadow: 0 0 12px #ffbb00;
         }
 
-        /* 아날로그 전화기 본체 */
         .phone-machine {
             width: 90%;
-            background: linear-gradient(135deg, #262626, #171717);
+            background: rgba(23, 23, 23, 0.85);
+            backdrop-filter: blur(5px);
             border-radius: 25px;
             padding: 30px 20px;
-            box-sizing: border-box;
-            box-shadow: 
-                0 15px 35px rgba(0,0,0,0.7), 
-                inset 0 2px 4px rgba(255,255,255,0.1);
-            border: 3px solid #404040;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid #333;
             text-align: center;
-            z-index: 5;
-            margin-bottom: 20px;
+            z-index: 10;
         }
 
-        h1 { font-size: 22px; margin: 0 0 6px 0; font-weight: 400; letter-spacing: -0.5px; }
-        .subtitle { color: #737373; font-size: 13px; margin: 0 0 25px 0; font-weight: 500; }
-
-        /* 토큰 디스플레이 (가독성을 위해 폰트 유지) */
         .display { 
             background-color: #022c22; 
-            border: 2px solid #065f46;
+            border: 1px solid #065f46;
             border-radius: 12px;
             padding: 16px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 28px; 
-            font-weight: bold; 
+            font-family: 'Courier New', monospace;
+            font-size: 26px; 
             color: #34d399; 
             margin-bottom: 25px;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.8);
-            text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
         }
 
-        /* 황금빛 동전 투입 버튼 */
         .btn-token { 
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
-            border: 2px solid #b45309; 
+            border: none; 
             width: 100%;
             padding: 18px 0; 
-            font-size: 18px; 
-            font-weight: 450; 
+            font-size: 16px; 
+            font-weight: 300; /* 얇은 두께 유지 */
             border-radius: 12px; 
             cursor: pointer; 
-            transition: all 0.15s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 10; 
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
-        .btn-token:hover { 
-            transform: translateY(-2px); 
-            background: linear-gradient(135deg, #fef08a, #f59e0b);
-            box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3);
-        }
-        .btn-token:active { 
-            transform: translateY(1px); 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            z-index: 20;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            letter-spacing: 1px;
         }
 
-        .hint {
-            color: #525252;
-            font-size: 12px;
-            margin-top: 15px;
-            letter-spacing: 0.5px;
-        }
+        .btn-token:active { transform: translateY(1px); }
+
+        .hint { color: #525252; font-size: 10px; margin-top: 15px; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
     <div class="booth">
-        <div class="booth-window"></div>
+        <div id="word-layer"></div> 
 
-        <div class="booth-sign" id="signBoard">
-            <span class="letter">T</span>
-            <span class="letter">E</span>
-            <span class="letter">L</span>
-            <span class="letter">E</span>
-            <span class="letter">P</span>
-            <span class="letter">H</span>
-            <span class="letter">O</span>
-            <span class="letter">N</span>
-            <span class="letter">E</span>
+        <div class="booth-sign">
+            <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N</span><span class="letter">E</span>
         </div>
         
         <div class="phone-machine">
             <h1>KAIST PHONE REFUGEES</h1>
-            <div class="subtitle">Final Exam Escape Station</div>
-            
+            <div class="subtitle">STAIRWELL CALL STATION</div>
             <div class="display">🪙 TOKENS: <span id="count">0</span></div>
-            
             <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
-            
-            <div class="hint">Drop a token to check in your escape.</div>
+            <div class="hint">Check in your call.</div>
         </div>
-
-        <div style="color: #525252; font-size: 11px; font-weight: 600; letter-spacing: 2px;">Calling...</div>
+        <div style="color: #444; font-size: 10px; font-weight: 300; letter-spacing: 2px; z-index: 10;">INSIDE THE BOOTH</div>
     </div>
 
     <script>
         let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
-        
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
+
+        // 📞 탈출 대신 '전화' 중심으로 전면 수정한 단어 배열
+        const phoneWords = ["RING", "HELLO?", "CONNECTED", "VOICE", "WHISPER", "SIGH", "BYE", "HEARING YOU", "CALLING"];
 
         function dropToken() {
             currentCount += 1;
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
-            
             updateLights(currentCount);
+            
+            // 버튼 누르면 전화 소리 입자 생성
+            createPhoneWordParticle();
             
             alert("🪙 Clink! You made it through another day.");
         }
@@ -195,14 +187,29 @@
         function updateLights(count) {
             const letters = document.querySelectorAll('.letter');
             let litCount = Math.floor(count / 7); 
-            
             letters.forEach((letter, index) => {
-                if (index < litCount) {
-                    letter.classList.add('active');
-                } else {
-                    letter.classList.remove('active');
-                }
+                if (index < litCount) letter.classList.add('active');
+                else letter.classList.remove('active');
             });
+        }
+
+        function createPhoneWordParticle() {
+            const layer = document.getElementById('word-layer');
+            const span = document.createElement('span');
+            
+            span.innerText = phoneWords[Math.floor(Math.random() * phoneWords.length)];
+            span.className = 'floating-word';
+            
+            // 중앙의 기계 상자를 살짝 피해서 무작위 위치 지정 (여백 배치)
+            span.style.left = Math.random() * 85 + 5 + '%';
+            span.style.top = Math.random() * 85 + 5 + '%';
+            
+            layer.appendChild(span);
+
+            // 화면에 35개 이상 쌓이면 오래된 단어부터 삭제 (성능 및 청소 관리)
+            if(layer.children.length > 35) {
+                layer.removeChild(layer.firstChild);
+            }
         }
     </script>
 </body>
