@@ -5,86 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAIST Phone Refugees</title>
     <style>
-        /* 완벽한 블랙 배경, 화면 스크롤 제거 */
+        /* 1번 수정: 아주 밝고 따뜻한 원목 분위기의 도서관 배경 */
         body { 
-            background-color: #000000; 
-            color: #fff; 
+            background-color: #f5e9da; /* 따뜻한 크림색 도서관 벽면 */
+            color: #1f140a; 
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
             display: flex;
             justify-content: center;
-            align-items: flex-end; /* 모든 책과 부스를 화면 바닥에 정렬 */
+            align-items: flex-end; /* 화면 바닥에 정렬 */
             height: 100vh;
             margin: 0;
             overflow: hidden; 
         }
 
-        /* 📚 가로로 화면을 100% 꽉 채우는 거대 책 선반 (원목 바닥 느낌) */
+        /* 📚 1번 수정: 화면 가로 전체를 채우는 거대 책 선반 (밝은 원목) */
         .giant-shelf {
             width: 100vw;
-            height: 720px; /* 부스 높이(680px)를 수용하는 선반 높이 */
+            height: 720px; 
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            border-bottom: 24px solid #2d1e13; /* 화면 맨 밑을 꽉 채우는 두꺼운 책장 나무 프레임 */
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.8);
+            border-bottom: 24px solid #8e6241; /* 밝고 따뜻한 갈색 원목 프레임 */
+            box-shadow: inset 0 -10px 15px rgba(0,0,0,0.2);
             position: relative;
             box-sizing: border-box;
+            background: linear-gradient(180deg, transparent, rgba(230,210,190,0.3)); /* 선반 안쪽 따뜻한 그림자 */
         }
 
-        /* 📖 좌우로 빽빽하게 화면 끝까지 차오르는 거대 서적 컨테이너 */
+        /* 📖 책 배치 똑같이 유지하되 조도 UP (빽빽하게 채움) */
         .book-group {
             flex: 1;
             display: flex;
             align-items: flex-end;
-            gap: 2px; /* 책끼리 빈틈없이 붙도록 유격 최소화 */
+            gap: 2px;
             overflow: hidden;
-            opacity: 0.25; /* 전화부스 서적이 돋보이도록 주변 서적은 딥하게 톤다운 */
+            opacity: 0.6; /* 전화부스 서적이 돋보이도록 은은하게 처리 */
             transition: opacity 0.3s ease;
         }
         .book-group:hover {
-            opacity: 0.45; /* 마우스 올리면 은은하게 도서관 책들이 드러남 */
+            opacity: 0.9; /* 마우스 올리면 선명하게 보임 */
         }
         
         .book-group.left { justify-content: flex-end; }
         .book-group.right { justify-content: flex-start; }
 
-        /* 거대 서적 공통 스타일 (부스 크기와 유사하도록 600px 이상의 거대 크기) */
+        /* 밝은 조도에 맞춘 컬러 칩 */
         .giant-book {
             flex-shrink: 0;
             border-radius: 6px 6px 0 0;
-            box-shadow: 
-                inset 5px 0 7px rgba(255,255,255,0.03), 
-                inset -5px 0 7px rgba(0,0,0,0.6);
+            box-shadow: inset 5px 0 5px rgba(255,255,255,0.2), inset -5px 0 5px rgba(0,0,0,0.3);
         }
 
-        /* 680px 부스 서적과 높이가 전반적으로 유사한 높이 바리에이션 */
         .h-max  { height: 680px; }
         .h-tall { height: 660px; }
         .h-mid  { height: 640px; }
         .h-low  { height: 620px; }
-
-        /* 책 두께(너비) 바리에이션 */
         .w-thin { width: 40px; }
         .w-reg  { width: 55px; }
         .w-wide { width: 75px; }
 
-        /* 도서관 특유의 무겁고 아카이브된 컬러 칩 */
-        .c-navy      { background-color: #0f172a; }
-        .c-darkgreen { background-color: #064e3b; }
-        .c-wine      { background-color: #4c1d95; }
-        .c-brown     { background-color: #451a03; }
-        .c-slate     { background-color: #334155; }
-        .c-deepblue  { background-color: #1e3a8a; }
-        .c-charcoal  { background-color: #171717; }
+        .c-mutedblue  { background-color: #64748b; }
+        .c-warmgreen   { background-color: #166534; }
+        .c-winedark    { background-color: #701a75; }
+        .c-lightbrown  { background-color: #a16207; }
+        .c-slatelight  { background-color: #94a3b8; }
+        .c-deepblueish { background-color: #1d4ed8; }
+        .c-charcoal    { background-color: #262626; }
 
-        /* 📞 책장에 함께 꽂힌 '한 권의 거대한 책'이 된 전화부스 */
+        /* 3번 수정: 책처럼 꽂힌 전화부스 서적 (히든 전화기 본체) */
         .booth-book { 
             width: 420px; 
-            height: 680px; /* 거대 서적들과 완벽히 매칭되는 패널 높이 */
-            background: linear-gradient(180deg, #2a0808, #000000);
-            border: 16px solid #dc2626; /* 강렬한 빨간색 서적 표지 프레임 */
-            border-radius: 12px 12px 0 0; /* 책 윗부분 라운딩 느낌 */
-            box-shadow: 0 0 60px rgba(220, 38, 38, 0.35), inset 0 0 40px rgba(0, 0, 0, 1); 
+            height: 680px;
+            background: #a11f1f; /* 따뜻한 느낌의 빨간색 서적 표지 */
+            border: 12px solid #dc2626; 
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 0 30px rgba(220, 38, 38, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.5); 
             padding: 40px 25px;
             box-sizing: border-box;
             display: flex;
@@ -92,56 +87,59 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
-            z-index: 10; /* 양옆 책들 위로 그림자가 덮이도록 최상위 레이어 설정 */
+            z-index: 10;
             margin: 0 4px;
+            overflow: hidden; /* 표지가 열릴 때 전화기가 보이도록 */
         }
 
-        /* 전화 타이포 레이어 */
-        #word-layer {
+        /* 💡 3번 수정: 숨겨진 검정 전화기 본체 디자인 */
+        .hidden-phone {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 2;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 320px;
+            height: 480px;
+            background: linear-gradient(135deg, #171717, #000); /* 딥 블랙 */
+            border: 8px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+            opacity: 0; /* 처음에는 숨겨둠 */
+            transition: all 0.5s ease-in-out; /* 스르륵 나타나는 애니메이션 */
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .floating-word {
+        /* 3번 애니메이션 활성화 클래스 */
+        .booth-book.unveiled .hidden-phone {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* 전화기 수화기 (빈티지한 라운드 형태) */
+        .receiver {
             position: absolute;
-            font-weight: 200; 
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.35);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            animation: fadeIn 0.8s ease-out forwards;
+            bottom: -50px;
+            width: 140px;
+            height: 60px;
+            background: #000;
+            border-radius: 30px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: bottom 0.5s ease 0.2s; /* 스르륵 튀어나오는 애니메이션 */
+        }
+        .booth-book.unveiled .receiver {
+            bottom: 30px; /* 튀어나옴 */
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 0.35; transform: scale(1); }
-        }
-
-        /* 세련되고 얇은 Helvetica 타이포 디자인 */
-        h1 { 
-            font-size: 20px; 
-            margin: 0 0 6px 0; 
-            font-weight: 200; 
-            letter-spacing: 2px;
-            text-align: center;
-            z-index: 10;
-        }
-
-        .subtitle { 
-            color: #737373; 
-            font-size: 11px; 
-            margin: 0 0 25px 0; 
-            font-weight: 300; 
-            letter-spacing: 1px;
-            text-align: center;
-            z-index: 10;
-        }
-
+        /* 2번 수정: 얇은 Helvetica TELEPHONE (weight 400) */
         .booth-sign {
-            background-color: #110303;
+            background-color: #fdf2f2;
+            color: #a11f1f;
             width: 100%;
             text-align: center;
             padding: 14px 0;
@@ -153,41 +151,49 @@
         }
 
         .letter {
-            font-weight: 900;
+            font-weight: 400; /* 👈 요청하신 대로 얇고 세련된 Helvetica 400 설정 */
             font-size: 24px;
-            color: #3a1515; 
             transition: all 0.3s ease;
         }
 
+        /* 7개마다 불 켜지는 따뜻한 네온 */
         .letter.active {
-            color: #ffcc00; 
-            text-shadow: 0 0 12px #ffbb00;
+            color: #d97706; 
+            text-shadow: 0 0 10px rgba(217, 119, 6, 0.4);
         }
 
+        /* 전화기 상부 인터페이스 */
         .phone-machine {
             width: 90%;
-            background: rgba(23, 23, 23, 0.85);
-            backdrop-filter: blur(5px);
+            background: rgba(253, 242, 242, 0.95);
             border-radius: 25px;
             padding: 30px 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border: 1px solid #333;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #ddd;
             text-align: center;
             z-index: 10;
+            transition: opacity 0.3s ease; /* 전화기 나타날 때 흐려지게 */
+        }
+
+        /* 전화기 나타날 때 상부 인터페이스 흐려짐 */
+        .booth-book.unveiled .phone-machine {
+            opacity: 0.1;
         }
 
         .display { 
-            background-color: #022c22; 
-            border: 1px solid #065f46;
+            background-color: #fdfcfb; 
+            border: 1px solid #ddd;
             border-radius: 12px;
             padding: 16px;
-            font-family: 'Courier New', monospace;
+            font-family: monospace;
             font-size: 26px; 
-            color: #34d399; 
+            color: #d97706; 
             margin-bottom: 25px;
         }
 
-        /* 얇은 가독성의 버튼 스타일 */
+        h1 { font-size: 20px; margin: 0 0 6px 0; font-weight: 300; letter-spacing: 2px; }
+        .subtitle { color: #8e6241; font-size: 11px; margin: 0 0 25px 0; font-weight: 400; letter-spacing: 1px; }
+
         .btn-token { 
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
@@ -204,7 +210,7 @@
         }
 
         .btn-token:active { transform: translateY(1px); }
-        .hint { color: #525252; font-size: 10px; margin-top: 15px; letter-spacing: 0.5px; }
+        .hint { color: #8e6241; font-size: 10px; margin-top: 15px; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -212,30 +218,30 @@
     <div class="giant-shelf">
         
         <div class="book-group left">
-            <div class="giant-book h-mid w-reg c-navy"></div>
-            <div class="giant-book h-tall w-thin c-wine"></div>
-            <div class="giant-book h-max w-wide c-brown"></div>
-            <div class="giant-book h-low w-reg c-slate"></div>
-            <div class="giant-book h-tall w-wide c-darkgreen"></div>
+            <div class="giant-book h-mid w-reg c-mutedblue"></div>
+            <div class="giant-book h-tall w-thin c-winedark"></div>
+            <div class="giant-book h-max w-wide c-lightbrown"></div>
+            <div class="giant-book h-low w-reg c-slatelight"></div>
+            <div class="giant-book h-tall w-wide c-warmgreen"></div>
             <div class="giant-book h-mid w-thin c-charcoal"></div>
-            <div class="giant-book h-max w-reg c-deepblue"></div>
-            <div class="giant-book h-low w-wide c-wine"></div>
-            <div class="giant-book h-tall w-thin c-brown"></div>
-            <div class="giant-book h-mid w-reg c-slate"></div>
-            <div class="giant-book h-max w-wide c-navy"></div>
-            <div class="giant-book h-low w-thin c-darkgreen"></div>
-            <div class="giant-book h-tall w-reg c-charcoal"></div>
+            <div class="giant-book h-max w-reg c-deepblueish"></div>
+            <div class="giant-book h-low w-wide c-winedark"></div>
         </div>
 
-        <div class="booth-book">
-            <div id="word-layer"></div> 
+        <div class="booth-book" id="boothBook">
+            
+            <div class="hidden-phone">
+                <div class="receiver">
+                    <div style="color:#111; font-size:11px; letter-spacing:1px; font-weight:600;">RECEIVER</div>
+                </div>
+            </div>
 
             <div class="booth-sign">
                 <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N</span><span class="letter">E</span>
             </div>
             
             <div class="phone-machine">
-                <h1>KAIST PHONE REFUGEES</h1>
+                <h1 style="color:#a11f1f; font-weight:400;">KAIST PHONE REFUGEES</h1>
                 <div class="subtitle">STAIRWELL CALL STATION</div>
                 <div class="display">🪙 TOKENS: <span id="count">0</span></div>
                 <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
@@ -246,18 +252,13 @@
 
         <div class="book-group right">
             <div class="giant-book h-tall w-reg c-charcoal"></div>
-            <div class="giant-book h-max w-wide c-deepblue"></div>
-            <div class="giant-book h-low w-thin c-wine"></div>
-            <div class="giant-book h-mid w-reg c-brown"></div>
-            <div class="giant-book h-tall w-wide c-slate"></div>
-            <div class="giant-book h-low w-thin c-darkgreen"></div>
-            <div class="giant-book h-max w-reg c-navy"></div>
-            <div class="giant-book h-mid w-wide c-wine"></div>
-            <div class="giant-book h-tall w-thin c-charcoal"></div>
-            <div class="giant-book h-max w-reg c-brown"></div>
-            <div class="giant-book h-low w-wide c-deepblue"></div>
-            <div class="giant-book h-tall w-thin c-slate"></div>
-            <div class="giant-book h-mid w-reg c-darkgreen"></div>
+            <div class="giant-book h-max w-wide c-deepblueish"></div>
+            <div class="giant-book h-low w-thin c-winedark"></div>
+            <div class="giant-book h-mid w-reg c-lightbrown"></div>
+            <div class="giant-book h-tall w-wide c-slatelight"></div>
+            <div class="giant-book h-low w-thin c-warmgreen"></div>
+            <div class="giant-book h-max w-reg c-mutedblue"></div>
+            <div class="giant-book h-mid w-wide c-winedark"></div>
         </div>
 
     </div>
@@ -267,15 +268,22 @@
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
-        const phoneWords = ["RING", "HELLO?", "CONNECTED", "VOICE", "WHISPER", "SIGH", "BYE", "HEARING YOU", "CALLING"];
-
         function dropToken() {
             currentCount += 1;
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
             updateLights(currentCount);
-            createPhoneWordParticle();
-            alert("🪙 Clink! You made it through another day.");
+            
+            // 💡 3번 수정: 버튼 누르면 전화기가 드러나는 애니메이션 클래스 활성화
+            const booth = document.getElementById('boothBook');
+            booth.classList.add('unveiled');
+            
+            // 애니메이션이 끝나면 자동으로 알림 팝업
+            setTimeout(() => {
+                alert("🪙 Clink! You made it through another day.\nThe refugee's book has been opened.");
+                // 원한다면 일정 시간 후 다시 닫히게 할 수도 있습니다.
+                // booth.classList.remove('unveiled');
+            }, 1000); 
         }
 
         function updateLights(count) {
@@ -285,20 +293,6 @@
                 if (index < litCount) letter.classList.add('active');
                 else letter.classList.remove('active');
             });
-        }
-
-        function createPhoneWordParticle() {
-            const layer = document.getElementById('word-layer');
-            const span = document.createElement('span');
-            span.innerText = phoneWords[Math.floor(Math.random() * phoneWords.length)];
-            span.className = 'floating-word';
-            span.style.left = Math.random() * 85 + 5 + '%';
-            span.style.top = Math.random() * 85 + 5 + '%';
-            layer.appendChild(span);
-
-            if(layer.children.length > 35) {
-                layer.removeChild(layer.firstChild);
-            }
         }
     </script>
 </body>
