@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAIST Phone Refugees</title>
     <style>
-        /* 1. 배경을 아예 완벽한 검은색(#000)으로 변경 */
+        /* 배경 검은색 유지 및 폰트를 Helvetica로 전면 교체 */
         body { 
             background-color: #000000; 
             color: #fff; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -19,19 +19,17 @@
             box-sizing: border-box;
         }
 
-        /* 2. 빨간색 공중전화부스 "내부"에 들어온 듯한 3D 공간감 */
+        /* 빨간색 공중전화부스 내부 투시 프레임 */
         .booth { 
             width: 100%;
             max-width: 420px; 
             height: 680px;
-            /* 부스 안쪽의 어두운 붉은 벽면 느낌의 그라데이션 */
             background: linear-gradient(180deg, #3a0d0d, #1a0505);
-            /* 부스를 감싸는 두껍고 강렬한 빨간색 프레임 외벽 */
             border: 16px solid #dc2626; 
             border-radius: 30px; 
             box-shadow: 
                 0 0 50px rgba(220, 38, 38, 0.3),
-                inset 0 0 30px rgba(0, 0, 0, 0.9); /* 내부 그림자로 깊이감 부여 */
+                inset 0 0 30px rgba(0, 0, 0, 0.9); 
             padding: 40px 25px;
             box-sizing: border-box;
             display: flex;
@@ -47,10 +45,10 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
             background-size: 100% 80px;
-            pointer-events: none; /* 클릭 방해 금지 */
+            pointer-events: none; 
         }
 
-        /* TELEPHONE 내부 간판 및 알파벳 */
+        /* TELEPHONE 내부 간판 */
         .booth-sign {
             background-color: #110303;
             width: 100%;
@@ -68,17 +66,17 @@
             font-weight: 900;
             font-size: 26px;
             letter-spacing: 1px;
-            color: #3a1515; /* 기본 꺼진 상태 (어두운 주홍빛 고스트 색상) */
+            color: #3a1515; 
             transition: all 0.3s ease;
         }
 
-        /* 7개마다 불 켜지는 효과 */
+        /* 7개마다 불 켜지는 네온 효과 */
         .letter.active {
-            color: #ffcc00; /* 클래식한 노란 공중전화 조명 조도 */
+            color: #ffcc00; 
             text-shadow: 0 0 12px #ffbb00, 0 0 25px #ff7700;
         }
 
-        /* 부스 벽에 걸린 아날로그 전화기 본체 */
+        /* 아날로그 전화기 본체 */
         .phone-machine {
             width: 90%;
             background: linear-gradient(135deg, #262626, #171717);
@@ -94,126 +92,4 @@
             margin-bottom: 20px;
         }
 
-        h1 { color: #f8fafc; font-size: 22px; margin: 0 0 6px 0; font-weight: 800; letter-spacing: -0.5px; }
-        .subtitle { color: #737373; font-size: 13px; margin: 0 0 25px 0; font-weight: 500; }
-
-        /* 토큰 수량 디스플레이 */
-        .display { 
-            background-color: #022c22; 
-            border: 2px solid #065f46;
-            border-radius: 12px;
-            padding: 16px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 28px; 
-            font-weight: bold; 
-            color: #34d399; 
-            margin-bottom: 25px;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.8);
-            text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
-        }
-
-        /* 황금빛 동전 투입구 버튼 (절대 레이어 배치로 클릭 에러 방지) */
-        .btn-token { 
-            background: linear-gradient(135deg, #fbbf24, #d97706);
-            color: #000; 
-            border: 2px solid #b45309; 
-            width: 100%;
-            padding: 18px 0; 
-            font-size: 18px; 
-            font-weight: 800; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            transition: all 0.15s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 10; /* 가장 위에 두어 무조건 클릭되도록 설정 */
-        }
-        .btn-token:hover { 
-            transform: translateY(-2px); 
-            background: linear-gradient(135deg, #fef08a, #f59e0b);
-            box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3);
-        }
-        .btn-token:active { 
-            transform: translateY(1px); 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .hint {
-            color: #525252;
-            font-size: 12px;
-            margin-top: 15px;
-            letter-spacing: 0.5px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="booth">
-        <div class="booth-window"></div>
-
-        <div class="booth-sign" id="signBoard">
-            <span class="letter">T</span>
-            <span class="letter">E</span>
-            <span class="letter">L</span>
-            <span class="letter">E</span>
-            <span class="letter">P</span>
-            <span class="letter">H</span>
-            <span class="letter">O</span>
-            <span class="letter">N</span>
-            <span class="letter">E</span>
-        </div>
-        
-        <div class="phone-machine">
-            <h1>KAIST PHONE REFUGEES</h1>
-            <div class="subtitle">Midterm Escape Station</div>
-            
-            <div class="display">🪙 TOKENS: <span id="count">0</span></div>
-            
-            <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
-            
-            <div class="hint">Drop a token to check in your escape.</div>
-        </div>
-
-        <div style="color: #525252; font-size: 11px; font-weight: 600; letter-spacing: 2px;">INSIDE THE BOOTH</div>
-    </div>
-
-    <script>
-        // 새로고침 해도 숫자 기억 (초기값 0개)
-        let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
-        
-        // 초기화 시 기존 스코어에 맞춰 글자 불 켜기
-        document.getElementById('count').innerText = currentCount;
-        updateLights(currentCount);
-
-        // 3. 메시지 입력창 완전히 제거된 순수 토큰 드롭 기능
-        function dropToken() {
-            currentCount += 1;
-            document.getElementById('count').innerText = currentCount;
-            localStorage.setItem('tokenCount', currentCount);
-            
-            // 전구 업데이트 실행
-            updateLights(currentCount);
-            
-            // 깔끔한 알림 팝업
-            alert("🪙 Clink! You made it through another day.");
-        }
-
-        // 7개당 한 글자씩 활성화해 주는 전구 함수
-        function updateLights(count) {
-            const letters = document.querySelectorAll('.letter');
-            let litCount = Math.floor(count / 7); 
-            
-            letters.forEach((letter, index) => {
-                if (index < litCount) {
-                    letter.classList.add('active');
-                } else {
-                    letter.classList.remove('active');
-                }
-            });
-        }
-    </script>
-</body>
-</html>
-            
-            letters.forEach((letter, index) => {
-                if (index < litCount)
+        h1 { font-size: 22px; margin: 0
