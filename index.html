@@ -119,11 +119,12 @@
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; 
-            filter: brightness(0.2) contrast(1.1); 
-            z-index: 1; 
+            filter: brightness(0.45) contrast(1.1); /* 0.2 -> 0.45로 변경 (덜 어둡고 형태가 잘 보이게) */
+            z-index: 0;                             /* 1 -> 0으로 변경 (부스 내부에서 가장 바닥에 깔리도록) */
             pointer-events: none; 
             box-shadow: inset 0 0 50px rgba(0,0,0,1); 
         }
+        
 
         /* 항상 순수 검정 배경 유지 TELEPHONE 전구 박스 */
         .booth-sign {
@@ -162,8 +163,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            z-index: 10;
-            opacity: 0.1; 
+            z-index: 10; /* 사진(0)보다 높은 10이므로 무조건 사진 위로 올라옵니다. */
+            opacity: 1;  /* 0.1 -> 1로 변경 (★가장 중요: 글씨와 박스가 투명해지지 않고 100% 선명하게 보임) */
         }
 
         h1 { font-size: 19px; margin: 0 0 4px 0; font-weight: 300; letter-spacing: 2px; text-align: center; color: #fff; }
@@ -220,9 +221,9 @@
 <body>
 
     <p class="project-statement">
-        By placing a "red telephone booth book" among achromatic volumes symbolizing a bleak library, this webpage visualizes the covert liberation and sanctuary of students hidden within the suffocating silence. The interior background is an actual photograph of the intervention site.<br><br>
-        The mechanism where fragments of comforting dialogue rattle down and stack like a mountain each time a token is inserted symbolizes the process in which invisible moments of solace and solidarity pile up to form a vast, "living archive."<br><br>
-        The Easter egg, where all traces vanish like a mirage upon touching the surrounding monochrome books, exposes the overwhelming rules of the library that enforce absolute silence, while paradoxically proving the existence of "phone refugees" hidden behind that quietude in the most dramatic and poetic manner.
+    Set against the quiet, studious backdrop of the library, this red telephone booth book introduces a warm, playful pause within the vast, monochrome shelves. The interior background displays a photograph of our actual site-specific installation, seamlessly weaving physical reality into the digital interface and inviting students into a moment of cozy shelter.<br><br>
+    Each token gently drops fragments of intimate dialogue and comforting words, cascading and resting under a soft gravity. As these phrases softly settle on one another, they stack into a beautiful, organic mountain of shared student thoughts—transforming fleeting, vulnerable whispers into a tactile, living archive of collective solidarity.<br><br>
+    Touching any surrounding monochrome book instantly clears the screen, gracefully returning the space to its natural quietness. This intuitive reset allows the temporary conversations to fade away, fully respecting the library's peaceful atmosphere. It stands as a deliberate design choice that beautifully balances shared human warmth with a quiet environment for focused study.
     </p>
 
     <div class="giant-shelf">
