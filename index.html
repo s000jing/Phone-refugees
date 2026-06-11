@@ -233,7 +233,7 @@
     </div>
 
     <script>
-        // 2번 수정: 새로고침해도 절대 초기화되지 않고 안전하게 기존 토큰 로드
+        // 새로고침 시 이어서 사용할 수 있는 영구 누적 메커니즘
         let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
         
         document.getElementById('count').innerText = currentCount;
@@ -248,7 +248,7 @@
         
         let particles = [];
 
-        // 페이지 로드 시, 이전에 저장된 단어들의 위치 상태가 있다면 복구하여 화면에 이어서 배치
+        // 페이지 로드 시 기존 글자 무덤 완벽 복구
         window.addEventListener('DOMContentLoaded', () => {
             let savedParticles = localStorage.getItem('phoneParticles') ? JSON.parse(localStorage.getItem('phoneParticles')) : [];
             savedParticles.forEach(sp => {
@@ -259,7 +259,7 @@
         function dropToken() {
             currentCount += 1;
             
-            // 2번 수정: 완점 달성(63개 초과) 시에만 브라우저 데이터 전체 강제 리셋 포맷
+            // TELEPHONE 완점(63개 초과) 시에만 초기화
             if (currentCount > 63) {
                 currentCount = 0;
                 document.querySelectorAll('.falling-typo').forEach(el => el.remove());
@@ -303,18 +303,18 @@
             particles.push({
                 el: el,
                 text: txt,
-                x: 210 + (Math.random() * 16 - 8), // 완벽한 산형 적층을 위해 정중앙 드롭폭 압축
+                x: 210 + (Math.random() * 16 - 8), 
                 y: 110,                             
                 vx: Math.random() * 1 - 0.5,          
-                vy: 15, // 1번 수정: 자연스러운 중력 작용을 받으며 신속하게 톡! 낙하
+                vy: 15, 
                 angle: Math.random() * 8 - 4,     
                 va: Math.random() * 2 - 1,          
-                radiusH: 55, // 글자 가로 감지 영역
-                radiusV: 12  // 글자 높이 감지 영역
+                radiusH: 55, 
+                radiusV: 12,
+                isSleeping: false            
             });
         }
 
-        // 새로고침 시 기존 단어 더미 유지를 위한 구조체 재건 함수
         function reconstructParticle(text, x, y, angle) {
             const booth = document.getElementById('boothBook');
             const el = document.createElement('div');
@@ -333,38 +333,37 @@
             });
         }
 
-        // 1번 수정: 진동을 없애고 중력 기반의 자연스러운 탄성과 미끄러짐을 구현한 댐핑 엔진
         function updatePhysicsLoop() {
-            const gravity = 0.55; // 1번 수정: 중력 가속도 기본 반영
+            const gravity = 0.55; 
             const floorY = 655;   
 
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 
-                // 가속도 운동 반영
+                if (p.isSleeping) continue;
+                
                 p.vy += gravity;
                 p.x += p.vx;
                 p.y += p.vy;
                 p.angle += p.va;
 
-                // 자연스러운 안착 유도를 위한 속도 저항 댐핑 감쇄
                 p.vx *= 0.90;
                 p.vy *= 0.92;
                 p.va *= 0.88;
 
-                // 좌우 외벽 프레임 충돌 저항
                 if (p.x < 70) { p.x = 70; p.vx = -p.vx * 0.1; }
                 if (p.x > 350) { p.x = 350; p.vx = -p.vx * 0.1; }
 
-                // 바닥 충돌 시 중력 작용 하에 부드럽게 '놓이도록' 처리
+                /* 🛠️ 수정 핵심: 바닥 마찰력 극대화 제어 (0.6 ➡️ 0.05) */
                 if (p.y > floorY) {
                     p.y = floorY;
-                    p.vy = -p.vy * 0.05; // 튀지 않고 덜컥 주저앉음
-                    p.vx *= 0.6;
-                    p.va *= 0.4;
+                    p.vy = -p.vy * 0.02; 
+                    p.vx *= 0.05;        /* 👈 바닥에 닿자마자 미끄러짐을 완벽하게 차단 */
+                    p.va *= 0.05;        /* 👈 회전하며 구르는 현상 최소화 */
+                    p.isSleeping = true;
                 }
 
-                // 1번 수정: 글자 오브젝트 간 중력 기반 소프트 밀어내기 (진동 현상 완전 소멸)
+                // 타 글자체 오브제와의 안정적인 포개짐 연산
                 for (let j = 0; j < particles.length; j++) {
                     if (i === j) continue;
                     let other = particles[j];
@@ -377,42 +376,36 @@
                     let minH = (p.radiusH + other.radiusH) * 0.62;
                     let minV = 15; 
 
-                    // 두 글자가 겹치는 상황 발생 시
                     if (hDist < minH && vDist < minV) {
                         let overlapX = minH - hDist;
                         let overlapY = minV - vDist;
 
-                        // 중력 방향(세로축)을 우선하여 겹친 만큼 미세하고 부드럽게 스프링식 밀어내기 연산
                         if (overlapY < overlapX) {
                             if (dy > 0) {
-                                p.y += overlapY * 0.15; // 부드럽게 위로 밀려 얹어짐
+                                p.y += overlapY * 0.15; 
                             } else {
                                 p.y -= overlapY * 0.15;
                             }
-                            p.vy *= 0.3; // 충돌 에너지 흡수
-                            p.vx += dx * 0.02; // 산 모양을 만들기 위해 옆으로 살짝 미끄러짐 효과
+                            p.vy *= 0.3; 
+                            p.vx += dx * 0.01; /* 옆으로 과하게 미끄러지지 않도록 가로 분산력 억제 */
                         } else {
-                            // 가로축 겹침 최소화 분산
                             p.x += (dx > 0 ? 1 : -1) * overlapX * 0.1;
-                            p.vx *= 0.4;
+                            p.vx *= 0.2;
                         }
                     }
                 }
 
-                // 화면 좌표 갱신
                 p.el.style.top = p.y + 'px';
                 p.el.style.left = p.x + 'px';
                 p.el.style.transform = `translate(-50%, -50%) rotate(${p.angle}deg)`;
             }
 
-            // 부하 관리 및 글자 더미 세이브 상태 업데이트
             if (particles.length > 55) {
                 const dead = particles.shift();
                 if(dead && dead.el.parentNode) dead.el.parentNode.removeChild(dead.el);
             }
 
-            // 2번 수정: 실시간 움직임 위치를 저장소에 기록하여 새로고침 시 완벽 복구 보장
-            if (particles.length > 0 && Math.random() < 0.05) { // 연산 최적화를 주기적 저장
+            if (particles.length > 0 && Math.random() < 0.05) { 
                 let stateArray = particles.map(p => ({text: p.text, x: p.x, y: p.y, angle: p.angle}));
                 localStorage.setItem('phoneParticles', JSON.stringify(stateArray));
             }
