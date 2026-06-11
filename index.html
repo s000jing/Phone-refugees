@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAIST Phone Refugees</title>
+    <style>
+        body { background-color: #000; color: #fff; font-family: sans-serif; text-align: center; padding: 50px 20px; }
+        .container { max-width: 500px; margin: 0 auto; border: 2px solid #333; padding: 3px; border-radius: 10px; background: #111; }
+        h1 { color: #00FF00; font-size: 24px; }
+        .phone-box { font-size: 80px; margin: 30px 0; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .counter { font-size: 32px; font-weight: bold; color: #00FF00; margin: 20px 0; }
+        .btn-token { background-color: #00FF00; color: #000; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.2s; }
+        .btn-token:hover { transform: scale(1.05); background-color: #33ff33; }
+        .btn-token:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📞 KAIST Phone Refugees</h1>
+        <p>Midterm Escape Station</p>
+        
+        <div class="phone-box">☎️</div>
+        
+        <div class="counter">🪙 Tokens: <span id="count">12</span></div>
+        
+        <button class="btn-token" onclick="dropToken()">Insert Token</button>
+    </div>
+
+    <script>
+        // 간단한 카운트 기능 (새로고침하면 임시로 유지되거나 로컬에 저장됨)
+        let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 12;
+        document.getElementById('count').innerText = currentCount;
+
+        function dropToken() {
+            currentCount += 1;
+            document.getElementById('count').innerText = currentCount;
+            localStorage.setItem('tokenCount', currentCount);
+            alert("🪙 땡그랑! 오늘 하루도 버텨내셨군요.");
+        }
+    </script>
+</body>
+</html>
