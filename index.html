@@ -17,13 +17,13 @@
             overflow: hidden; 
         }
 
-        /* 1번 수정: 좌우 균형을 완벽히 맞춰 정중앙 정렬을 보장하는 선반 컨테이너 */
+        /* 거대 도서관 책 선반 프레임 */
         .giant-shelf {
             width: 100vw;
             height: 740px; 
             display: flex;
             align-items: flex-end;
-            justify-content: center; /* 완전한 수평 중앙 정렬 */
+            justify-content: center; 
             border-bottom: 24px solid #5c3a21; 
             box-shadow: 
                 inset 0 80px 150px rgba(0,0,0,0.95),
@@ -33,7 +33,7 @@
             background: linear-gradient(180deg, #1f140a, #0d0804); 
         }
 
-        /* 1번 수정: 좌우 아이템이 완벽히 동일한 부피를 차지하도록 flex-basis 설정 */
+        /* 1번 수정: 좌우 균형을 1:1로 강제 매칭하여 부스를 정중앙에 고정 */
         .book-group {
             flex-grow: 1;
             flex-basis: 0;
@@ -42,23 +42,23 @@
             gap: 2px;
             overflow: hidden;
             box-sizing: border-box;
+            opacity: 0.4;
         }
         
-        /* 정확한 데칼코마니 배치를 위한 정렬 선언 */
-        .book-group.left { justify-content: flex-end; padding-right: 10px; }
-        .book-group.right { justify-content: flex-start; padding-left: 10px; }
+        .book-group.left { justify-content: flex-end; padding-right: 15px; }
+        .book-group.right { justify-content: flex-start; padding-left: 15px; }
 
-        /* 3번 수정: 주변 책들의 명도와 밝기를 대폭 상향 (눈에 확실히 보이도록 조도 UP) */
         .giant-book {
             flex-shrink: 0;
             border-radius: 4px 4px 0 0;
-            box-shadow: inset 3px 0 5px rgba(255,255,255,0.1), inset -3px 0 5px rgba(0,0,0,0.4);
+            box-shadow: inset 3px 0 5px rgba(255,255,255,0.05), inset -3px 0 5px rgba(0,0,0,0.4);
             transition: all 0.2s ease-out;
         }
 
-        /* 3번 수정: 마우스 호버 시 완전히 하얗게 바래지는 모노톤 인터랙션 */
+        /* 3번 요구사항: 마우스 가까이 대면 책 한 권, 한 권에 은은하게 불 들어오기 */
         .giant-book:hover {
-            filter: brightness(1.4);
+            filter: brightness(1.5);
+            opacity: 1;
             cursor: pointer;
         }
 
@@ -70,21 +70,21 @@
         .w-reg  { width: 58px; }
         .w-wide { width: 78px; }
 
-        /* 1번 요구사항: 완벽한 흑백 모노톤 스케일 (가독성 높은 선명한 그레이레이어) */
-        .c-1 { background-color: #4a4a4a; } 
-        .c-2 { background-color: #5c5c5c; }
-        .c-3 { background-color: #707070; }
-        .c-4 { background-color: #828282; }
-        .c-5 { background-color: #949494; }
-        .c-6 { background-color: #a6a6a6; }
-        .c-7 { background-color: #b8b8b8; } 
+        /* 1번 요구사항: 너무 밝지도 어둡지도 않은 완벽한 밸런스의 미드톤 그레이 스케일 */
+        .c-1 { background-color: #2b2b2b; } 
+        .c-2 { background-color: #383838; }
+        .c-3 { background-color: #454545; }
+        .c-4 { background-color: #525252; }
+        .c-5 { background-color: #606060; }
+        .c-6 { background-color: #6e6e6e; }
+        .c-7 { background-color: #7c7c7c; } 
 
-        /* 4번 요구사항: 완벽한 대칭 아치형 기하학 구조를 가진 공중전화부스 서적 */
+        /* 4번 요구사항: 실제 공중전화 박스처럼 상단이 완전한 아치형인 루프 구조 */
         .booth-book-unit { 
             width: 420px; 
             height: 700px; 
             border: 16px solid #dc2626; 
-            border-radius: 200px 200px 12px 12px; /* 상단 리얼 아치 루프 */
+            border-radius: 200px 200px 12px 12px; /* 상단 아치 프레임 */
             background: linear-gradient(180deg, #3a0d0d, #1a0505);
             box-shadow: 0 0 50px rgba(220, 38, 38, 0.25), inset 0 0 30px rgba(0, 0, 0, 0.8); 
             box-sizing: border-box;
@@ -96,10 +96,10 @@
             padding: 40px 25px 25px 25px;
         }
 
-        /* 4번 요구사항: 무조건 순수 검정 배경만 고수하는 상단 TELEPHONE 박스 */
+        /* 4번 요구사항: 항상 순수 검정 배경을 유지하는 TELEPHONE 전구 박스 */
         .booth-sign {
-            background-color: #000000; /* 항상 칠흑같은 블랙 고정 */
-            width: 85%;
+            background-color: #000000; /* 항상 블랙 고정 */
+            width: 80%;
             text-align: center;
             padding: 12px 0;
             border-radius: 8px;
@@ -108,17 +108,17 @@
             gap: 6px;
             z-index: 10;
             box-shadow: inset 0 2px 6px rgba(0,0,0,0.9);
-            margin-top: 20px;
+            margin-top: 25px;
             margin-bottom: 25px;
-            border: 1px solid #222;
+            border: 1px solid #1a1a1a;
         }
 
-        /* 2번 요구사항: TELEPHONE 전구 타이포 font weight 400 얇은 헬베티카 고정 */
+        /* 2번 요구사항: 얇은 Helvetica 300 굵기로 통일된 알파벳 전구 */
         .letter {
             font-family: "Helvetica Neue", Helvetica, sans-serif;
-            font-weight: 400; 
+            font-weight: 300; 
             font-size: 22px;
-            color: #220505; /* 평소에는 완전히 꺼진 상태 */
+            color: #220505; 
             transition: all 0.3s ease;
             letter-spacing: 1px;
         }
@@ -128,7 +128,6 @@
             text-shadow: 0 0 10px #ffbb00, 0 0 20px #ff5500;
         }
 
-        /* 공중전화 전면 제어 머신 패널 */
         .phone-machine-body {
             width: 100%;
             display: flex;
@@ -137,10 +136,10 @@
             z-index: 10;
         }
 
-        h1 { font-size: 19px; margin: 0 0 4px 0; font-weight: 200; letter-spacing: 2px; text-align: center; color: #fff; }
+        /* 2번 요구사항: 모든 타이포그래피 굵기를 명확하게 300으로 정렬 */
+        h1 { font-size: 19px; margin: 0 0 4px 0; font-weight: 300; letter-spacing: 2px; text-align: center; color: #fff; }
         .subtitle { color: #8a6f6f; font-size: 11px; margin: 0 0 20px 0; font-weight: 300; letter-spacing: 1px; text-align: center; }
 
-        /* 토큰 수량 디스플레이 */
         .display { 
             width: 100%;
             background-color: #022c22; 
@@ -155,7 +154,7 @@
             text-align: center;
         }
 
-        /* 2번 요구사항: 얇은 헬베티카 300 적용된 코인 투입 버튼 */
+        /* 2번 요구사항: 얇은 Helvetica 300 코인 버튼 */
         .btn-token { 
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
@@ -164,7 +163,7 @@
             padding: 16px 0; 
             font-size: 15px; 
             font-family: "Helvetica Neue", Helvetica, sans-serif;
-            font-weight: 300; /* 초슬림 굵기 */
+            font-weight: 300; 
             border-radius: 10px; 
             cursor: pointer; 
             z-index: 20;
@@ -173,40 +172,40 @@
         }
         .btn-token:active { transform: translateY(1px); }
 
-        /* 4번 요구사항: 화이트 컬러의 얇은 헬베티카 텍스트들이 켜켜이 쌓여올려지는 스택 패널 */
-        .typo-stack-frame {
-            width: 100%;
-            height: 180px;
-            margin-top: 25px;
-            border-top: 1px dashed rgba(255,255,255,0.15);
-            padding-top: 12px;
-            display: flex;
-            flex-direction: column-reverse; /* 최신 로그가 맨 아래 깔리며 위로 밀어올려지는 구조 */
-            overflow: hidden;
-            gap: 6px;
-            box-sizing: border-box;
-        }
-
-        /* 적층되는 타이포그래피 개별 유닛 템플릿 스타일 (Thin White Helvetica) */
-        .stack-line {
+        /* 2번 요구사항: 상단에서 톡 떨어져 바닥에 무작위 각도로 적층되는 물리 타이포 입자 */
+        .falling-typo {
+            position: absolute;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
-            font-weight: 200; /* 극도로 얇은 두께 */
-            font-size: 11px;
+            font-weight: 300; /* 화이트 슬림 폰트 고정 */
+            font-size: 12px;
             color: #ffffff; /* 순수 화이트 */
             letter-spacing: 2px;
             text-transform: uppercase;
-            text-align: center;
-            opacity: 0;
-            animation: pushUp 0.4s ease-out forwards;
-            line-height: 1.2;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 2;
+            /* 위에서 아래로 중력 낙하하는 자연스러운 베지에 가속도 적용 */
+            animation: dropPhysics 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        @keyframes pushUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 0.7; transform: translateY(0); }
+        /* 2번 수정: dynamic CSS 변수를 통해 주입되는 무작위 낙하선 연출 규칙 */
+        @keyframes dropPhysics {
+            0% {
+                top: 90px; /* 간판 바로 아래에서 스폰 */
+                opacity: 0;
+                transform: translate(-50%, 0) rotate(0deg);
+            }
+            15% {
+                opacity: 1;
+            }
+            100% {
+                top: var(--land-top); /* 랜덤 종착지(바닥 부근) */
+                transform: translate(-50%, 0) rotate(var(--land-rot)); /* 랜덤 회전 각도 */
+                opacity: 0.65;
+            }
         }
 
-        .hint { color: #525252; font-size: 10px; margin-top: 12px; letter-spacing: 0.5px; text-align: center; }
+        .hint { color: #525252; font-size: 10px; margin-top: auto; letter-spacing: 0.5px; text-align: center; z-index: 10; }
     </style>
 </head>
 <body>
@@ -224,11 +223,10 @@
             <div class="giant-book h-low w-wide c-4"></div>
         </div>
 
-        <div class="booth-book-unit">
+        <div class="booth-book-unit" id="boothBook">
             
             <div class="booth-sign">
-                <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N
-</span><span class="letter">E</span>
+                <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N</span><span class="letter">E</span>
             </div>
             
             <div class="phone-machine-body">
@@ -236,10 +234,6 @@
                 <div class="subtitle">STAIRWELL CALL STATION</div>
                 <div class="display">🪙 TOKENS: <span id="count">0</span></div>
                 <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
-            </div>
-
-            <div class="typo-stack-frame" id="typoContainer">
-                <div style="color: rgba(255,255,255,0.15); font-weight: 200; font-size: 10px; text-align: center; letter-spacing: 1px;">[ ARCHIVE EMPTY ]</div>
             </div>
 
             <div class="hint">VOL. 1: THE REFUGEE</div>
@@ -263,28 +257,16 @@
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
-        // 4번 수정: 동전 투입 시 적층 스택에 쌓일 화이트 얇은 헬베티카용 키워드 메타데이터 셋
-        const metaLogs = [
-            "CALL CONNECTED // LINE_01",
-            "INCOMING AUDIO SIGNAL",
-            "REFUGEE STATION ACTIVE",
-            "STAIRWELL COIN DROP",
-            "TIMESTAMP_ERR_SECURE",
-            "AUDIO FREQUENCY STABLE",
-            "WHISPER LOG GENERATED",
-            "ECHO SYSTEM INTERCEPT",
-            "00:01 TIME_STRETCH",
-            "NET_ESCAPE_PROTOCOL"
-        ];
+        // 전화 소리 파편 단어 스키마
+        const phoneWords = ["RING", "HELLO?", "CONNECTED", "VOICE", "WHISPER", "SIGH", "BYE", "HEARING YOU", "CALLING"];
 
-        // 2번 요구사항: 검정 전화기 튀어나오는 기믹 완전 박살내고 원초적 토큰 드롭만 수행
         function dropToken() {
             currentCount += 1;
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
             
             updateLights(currentCount);
-            pushTypoStack(); // 4번 요구사항 타이포 적층기 트리거
+            spawnFallingTypo(); // 2번 수정: 톡 떨어져 산처럼 쌓이는 기믹 실행
             
             alert("🪙 Clink! You made it through another day.");
         }
@@ -298,22 +280,30 @@
             });
         }
 
-        // 4번 수정: 얇은 화이트 폰트를 하단에서부터 차곡차곡 위로 밀어내며 쌓아 올리는 물리 로깅 기믹
-        function pushTypoStack() {
-            const container = document.getElementById('typoContainer');
+        // 2번 수정: 단어가 위에서 톡 떨어져 바닥 영역에 비정형 산 구조로 물리 적층되는 함수
+        function spawnFallingTypo() {
+            const booth = document.getElementById('boothBook');
+            const el = document.createElement('div');
+            el.className = 'falling-typo';
+            el.innerText = phoneWords[Math.floor(Math.random() * phoneWords.length)];
             
-            // 첫 입력 시 초기화 멘트 삭제
-            if (container.innerHTML.includes("ARCHIVE EMPTY")) {
-                container.innerHTML = "";
-            }
+            // 물리적인 불규칙 무작위 적층을 위한 변수 연산
+            const landTop = Math.floor(Math.random() * 90) + 540; // 부스 하단 공간(540px~630px 사이)에 낙하 고정
+            const landLeft = Math.floor(Math.random() * 200) + 110; // 부스 가로폭 내부(110px~310px 사이)로 분산
+            const landRot = Math.floor(Math.random() * 60) - 30; // 무작위 경사 각도 생성 (-30도 ~ 30도)
+            
+            // CSS 변수 체인을 통해 동적 물리 렌더링 주입
+            el.style.setProperty('--land-top', landTop + 'px');
+            el.style.setProperty('--land-rot', landRot + 'deg');
+            el.style.left = landLeft + 'px';
+            
+            booth.appendChild(el);
 
-            const newLine = document.createElement('div');
-            newLine.className = 'stack-line';
-            
-            // 무작위 메타 로그 스트링 바인딩
-            newLine.innerText = metaLogs[Math.floor(Math.random() * metaLogs.length)];
-            
-            container.appendChild(newLine);
+            // 화면 과부하 방지를 위한 자동 메모리 클리닝 (최대 40개 유지)
+            const allTypos = booth.querySelectorAll('.falling-typo');
+            if (allTypos.length > 40) {
+                booth.removeChild(allTypos[0]);
+            }
         }
     </script>
 </body>
