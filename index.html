@@ -33,7 +33,7 @@
             background: linear-gradient(180deg, #1f140a, #0d0804); 
         }
 
-        /* 1번 수정: 좌우 균형을 1:1로 강제 매칭하여 부스를 정중앙에 고정 */
+        /* 좌우 균형 1:1 매칭 수평 고정 */
         .book-group {
             flex-grow: 1;
             flex-basis: 0;
@@ -55,7 +55,6 @@
             transition: all 0.2s ease-out;
         }
 
-        /* 3번 요구사항: 마우스 가까이 대면 책 한 권, 한 권에 은은하게 불 들어오기 */
         .giant-book:hover {
             filter: brightness(1.5);
             opacity: 1;
@@ -70,7 +69,7 @@
         .w-reg  { width: 58px; }
         .w-wide { width: 78px; }
 
-        /* 1번 요구사항: 너무 밝지도 어둡지도 않은 완벽한 밸런스의 미드톤 그레이 스케일 */
+        /* 조도 컨펌 완료된 미드톤 그레이 스케일 */
         .c-1 { background-color: #2b2b2b; } 
         .c-2 { background-color: #383838; }
         .c-3 { background-color: #454545; }
@@ -79,12 +78,12 @@
         .c-6 { background-color: #6e6e6e; }
         .c-7 { background-color: #7c7c7c; } 
 
-        /* 4번 요구사항: 실제 공중전화 박스처럼 상단이 완전한 아치형인 루프 구조 */
+        /* 상단 아치형 루프 구조 전화부스 장서 */
         .booth-book-unit { 
             width: 420px; 
             height: 700px; 
             border: 16px solid #dc2626; 
-            border-radius: 200px 200px 12px 12px; /* 상단 아치 프레임 */
+            border-radius: 200px 200px 12px 12px; 
             background: linear-gradient(180deg, #3a0d0d, #1a0505);
             box-shadow: 0 0 50px rgba(220, 38, 38, 0.25), inset 0 0 30px rgba(0, 0, 0, 0.8); 
             box-sizing: border-box;
@@ -94,11 +93,12 @@
             flex-direction: column;
             align-items: center;
             padding: 40px 25px 25px 25px;
+            overflow: hidden;
         }
 
-        /* 4번 요구사항: 항상 순수 검정 배경을 유지하는 TELEPHONE 전구 박스 */
+        /* 항상 순수 검정 배경 유지 TELEPHONE 전구 박스 */
         .booth-sign {
-            background-color: #000000; /* 항상 블랙 고정 */
+            background-color: #000000; 
             width: 80%;
             text-align: center;
             padding: 12px 0;
@@ -113,7 +113,7 @@
             border: 1px solid #1a1a1a;
         }
 
-        /* 2번 요구사항: 얇은 Helvetica 300 굵기로 통일된 알파벳 전구 */
+        /* 얇은 Helvetica 300 전구 알파벳 */
         .letter {
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             font-weight: 300; 
@@ -136,7 +136,6 @@
             z-index: 10;
         }
 
-        /* 2번 요구사항: 모든 타이포그래피 굵기를 명확하게 300으로 정렬 */
         h1 { font-size: 19px; margin: 0 0 4px 0; font-weight: 300; letter-spacing: 2px; text-align: center; color: #fff; }
         .subtitle { color: #8a6f6f; font-size: 11px; margin: 0 0 20px 0; font-weight: 300; letter-spacing: 1px; text-align: center; }
 
@@ -154,7 +153,7 @@
             text-align: center;
         }
 
-        /* 2번 요구사항: 얇은 Helvetica 300 코인 버튼 */
+        /* 얇은 Helvetica 300 코인 버튼 */
         .btn-token { 
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
@@ -172,37 +171,19 @@
         }
         .btn-token:active { transform: translateY(1px); }
 
-        /* 2번 요구사항: 상단에서 톡 떨어져 바닥에 무작위 각도로 적층되는 물리 타이포 입자 */
+        /* 실시간 물리 엔진용 타이포 사양 (Thin White 300 고정) */
         .falling-typo {
             position: absolute;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
-            font-weight: 300; /* 화이트 슬림 폰트 고정 */
+            font-weight: 300; 
             font-size: 12px;
-            color: #ffffff; /* 순수 화이트 */
+            color: #ffffff; 
             letter-spacing: 2px;
             text-transform: uppercase;
             white-space: nowrap;
             pointer-events: none;
             z-index: 2;
-            /* 위에서 아래로 중력 낙하하는 자연스러운 베지에 가속도 적용 */
-            animation: dropPhysics 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        /* 2번 수정: dynamic CSS 변수를 통해 주입되는 무작위 낙하선 연출 규칙 */
-        @keyframes dropPhysics {
-            0% {
-                top: 90px; /* 간판 바로 아래에서 스폰 */
-                opacity: 0;
-                transform: translate(-50%, 0) rotate(0deg);
-            }
-            15% {
-                opacity: 1;
-            }
-            100% {
-                top: var(--land-top); /* 랜덤 종착지(바닥 부근) */
-                transform: translate(-50%, 0) rotate(var(--land-rot)); /* 랜덤 회전 각도 */
-                opacity: 0.65;
-            }
+            transform-origin: center center;
         }
 
         .hint { color: #525252; font-size: 10px; margin-top: auto; letter-spacing: 0.5px; text-align: center; z-index: 10; }
@@ -253,12 +234,17 @@
     </div>
 
     <script>
-        let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
+        // 1번 수정: 기존 저장 기록을 강제 삭제하여 접속 시 무조건 0개로 클린 스타트
+        localStorage.removeItem('tokenCount');
+        let currentCount = 0;
+        
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
-        // 전화 소리 파편 단어 스키마
         const phoneWords = ["RING", "HELLO?", "CONNECTED", "VOICE", "WHISPER", "SIGH", "BYE", "HEARING YOU", "CALLING"];
+        
+        // 실시간 물리 궤적을 연산할 입자 배열
+        let particles = [];
 
         function dropToken() {
             currentCount += 1;
@@ -266,7 +252,7 @@
             localStorage.setItem('tokenCount', currentCount);
             
             updateLights(currentCount);
-            spawnFallingTypo(); // 2번 수정: 톡 떨어져 산처럼 쌓이는 기믹 실행
+            spawnPhysicsTypo(); // 2번 수정: 진짜 역학 충돌 입자 스폰
             
             alert("🪙 Clink! You made it through another day.");
         }
@@ -280,31 +266,100 @@
             });
         }
 
-        // 2번 수정: 단어가 위에서 톡 떨어져 바닥 영역에 비정형 산 구조로 물리 적층되는 함수
-        function spawnFallingTypo() {
+        // 2번 수정: 단어 오브젝트 생성 및 초기 물리 상태 주입
+        function spawnPhysicsTypo() {
             const booth = document.getElementById('boothBook');
             const el = document.createElement('div');
             el.className = 'falling-typo';
             el.innerText = phoneWords[Math.floor(Math.random() * phoneWords.length)];
-            
-            // 물리적인 불규칙 무작위 적층을 위한 변수 연산
-            const landTop = Math.floor(Math.random() * 90) + 540; // 부스 하단 공간(540px~630px 사이)에 낙하 고정
-            const landLeft = Math.floor(Math.random() * 200) + 110; // 부스 가로폭 내부(110px~310px 사이)로 분산
-            const landRot = Math.floor(Math.random() * 60) - 30; // 무작위 경사 각도 생성 (-30도 ~ 30도)
-            
-            // CSS 변수 체인을 통해 동적 물리 렌더링 주입
-            el.style.setProperty('--land-top', landTop + 'px');
-            el.style.setProperty('--land-rot', landRot + 'deg');
-            el.style.left = landLeft + 'px';
-            
             booth.appendChild(el);
-
-            // 화면 과부하 방지를 위한 자동 메모리 클리닝 (최대 40개 유지)
-            const allTypos = booth.querySelectorAll('.falling-typo');
-            if (allTypos.length > 40) {
-                booth.removeChild(allTypos[0]);
-            }
+            
+            particles.push({
+                el: el,
+                x: 210 + (Math.random() * 40 - 20), // 부스 정중앙 부근 스폰
+                y: 110,                             // 간판 바로 아래 스폰
+                vx: Math.random() * 4 - 2,          // 초기 가로 튕김 계수
+                vy: 12,                             // 2번 수정: 훨씬 빠르게 떨어지도록 초기 하향 속도 대폭 업
+                angle: Math.random() * 20 - 10,     // 랜덤 회전각
+                va: Math.random() * 4 - 2,          // 랜덤 회전 속도
+                radiusH: 45,                        // 충돌 감지 가로 반경 (글자 너비 대응)
+                radiusV: 10                         // 충돌 감지 세로 반경 (글자 높이 대응)
+            });
         }
+
+        // 2번 수정: JS 실시간 프레임 동기화 무한 루프 (True Bounding-Box Physics Engine)
+        function updatePhysicsLoop() {
+            const gravity = 0.95; // 2번 수정: 중력 가속도 상향 (더 묵직하고 빠르게 낙하)
+            const floorY = 645;   // 부스 하단 바닥 경계선 위치
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                
+                // 가속도 및 위치 연산
+                p.vy += gravity;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.angle += p.va;
+
+                // 공기 저항 감쇄 감속
+                p.vx *= 0.98;
+                p.va *= 0.96;
+
+                // 부스 좌우 외벽 프레임 충돌 바운스 처리
+                if (p.x < 55) { p.x = 55; p.vx = -p.vx * 0.4; p.va *= -0.5; }
+                if (p.x > 365) { p.x = 365; p.vx = -p.vx * 0.4; p.va *= -0.5; }
+
+                // 부스 하단 원목 선반 바닥 마찰 및 충돌 처리
+                if (p.y > floorY) {
+                    p.y = floorY;
+                    p.vy = -p.vy * 0.15; // 바닥 충돌 시 살짝 통 튕김
+                    p.vx *= 0.5;
+                    p.va *= 0.4;
+                }
+
+                // 2번 핵심 수정: 글자 오브젝트 간 상호 실시간 충돌 및 산형 적층 연산
+                for (let j = 0; j < particles.length; j++) {
+                    if (i === j) continue;
+                    let other = particles[j];
+
+                    let dx = p.x - other.x;
+                    let dy = p.y - other.y;
+                    let hDist = Math.abs(dx);
+                    let vDist = Math.abs(dy);
+
+                    // 설정된 가로/세로 볼륨을 침범할 경우 (오브제 투과 방지)
+                    if (hDist < (p.radiusH + other.radiusH) * 0.75 && vDist < (p.radiusV + other.radiusV) * 1.1) {
+                        // 세로축 반발력 제공 (밀어내며 밀착)
+                        if (vDist > 0) {
+                            p.y += (dy > 0 ? 1 : -1) * 1.5;
+                            p.vy = (dy > 0 ? 1 : -1) * Math.abs(p.vy) * 0.2;
+                        }
+                        // 가로축 반발력 제공 (옆으로 흩어지며 무작위로 산처럼 쌓임)
+                        if (hDist > 0) {
+                            p.x += (dx > 0 ? 1 : -1) * 2.0;
+                            p.vx = (dx > 0 ? 1 : -1) * Math.abs(p.vx) * 0.3;
+                            p.va += dx * 0.15; // 부딪힐 때 회전 모멘텀 가중
+                        }
+                    }
+                }
+
+                // 동역학 연산값을 실제 HTML DOM 요소 좌표계에 실시간 사상
+                p.el.style.top = p.y + 'px';
+                p.el.style.left = p.x + 'px';
+                p.el.style.transform = `translate(-50%, -50%) rotate(${p.angle}deg)`;
+            }
+
+            // 부하 방지를 위한 최대 입자 한계 제어 (45개 넘으면 오래된 것 소멸)
+            if (particles.length > 45) {
+                const dead = particles.shift();
+                if(dead && dead.el.parentNode) dead.el.parentNode.removeChild(dead.el);
+            }
+
+            requestAnimationFrame(updatePhysicsLoop);
+        }
+
+        // 브라우저 렌더링 프레임 루프 가동
+        requestAnimationFrame(updatePhysicsLoop);
     </script>
 </body>
 </html>
