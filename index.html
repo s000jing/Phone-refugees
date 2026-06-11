@@ -69,7 +69,7 @@
         .w-reg  { width: 58px; }
         .w-wide { width: 78px; }
 
-        /* 조도 컨펌 완료된 미드톤 그레이 스케일 */
+        /* 조도 보존 처리된 미드톤 그레이 스케일 */
         .c-1 { background-color: #2b2b2b; } 
         .c-2 { background-color: #383838; }
         .c-3 { background-color: #454545; }
@@ -234,27 +234,39 @@
     </div>
 
     <script>
-        // 1번 수정: 기존 저장 기록을 강제 삭제하여 접속 시 무조건 0개로 클린 스타트
-        localStorage.removeItem('tokenCount');
-        let currentCount = 0;
+        // 2번 수정: 접속할 때마다 초기화되는 코드 삭제 ➡️ 영구 누적 활성화
+        let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
         
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
         const phoneWords = ["RING", "HELLO?", "CONNECTED", "VOICE", "WHISPER", "SIGH", "BYE", "HEARING YOU", "CALLING"];
-        
-        // 실시간 물리 궤적을 연산할 입자 배열
         let particles = [];
 
         function dropToken() {
             currentCount += 1;
+            
+            // 2번 요구사항: TELEPHONE 간판이 다 채워지면 (9글자 * 7 = 63개 초과 시) 0개로 클리어 리셋
+            if (currentCount > 63) {
+                currentCount = 0;
+                document.querySelectorAll('.falling-typo').forEach(el => el.remove());
+                particles = [];
+                alert("☎️ TELEPHONE is fully illuminated! The archive loops back to 0.");
+            }
+            
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
             
             updateLights(currentCount);
-            spawnPhysicsTypo(); // 2번 수정: 진짜 역학 충돌 입자 스폰
             
-            alert("🪙 Clink! You made it through another day.");
+            // 리셋 시점이 아닐 때만 폰트 드롭
+            if (currentCount > 0) {
+                spawnPhysicsTypo(); 
+            }
+            
+            if (currentCount !== 0) {
+                alert("🪙 Clink! You made it through another day.");
+            }
         }
 
         function updateLights(count) {
@@ -266,7 +278,6 @@
             });
         }
 
-        // 2번 수정: 단어 오브젝트 생성 및 초기 물리 상태 주입
         function spawnPhysicsTypo() {
             const booth = document.getElementById('boothBook');
             const el = document.createElement('div');
@@ -276,48 +287,48 @@
             
             particles.push({
                 el: el,
-                x: 210 + (Math.random() * 40 - 20), // 부스 정중앙 부근 스폰
-                y: 110,                             // 간판 바로 아래 스폰
-                vx: Math.random() * 4 - 2,          // 초기 가로 튕김 계수
-                vy: 12,                             // 2번 수정: 훨씬 빠르게 떨어지도록 초기 하향 속도 대폭 업
-                angle: Math.random() * 20 - 10,     // 랜덤 회전각
-                va: Math.random() * 4 - 2,          // 랜덤 회전 속도
-                radiusH: 45,                        // 충돌 감지 가로 반경 (글자 너비 대응)
-                radiusV: 10                         // 충돌 감지 세로 반경 (글자 높이 대응)
+                x: 210 + (Math.random() * 40 - 20), 
+                y: 110,                             
+                vx: Math.random() * 2 - 1,          
+                vy: 8, // 낙하 속도는 스피디하게 유지
+                angle: Math.random() * 10 - 5,     
+                va: Math.random() * 2 - 1,          
+                radiusH: 42,                        
+                radiusV: 12                         
             });
         }
 
-        // 2번 수정: JS 실시간 프레임 동기화 무한 루프 (True Bounding-Box Physics Engine)
+        // 1번 수정: 팅팅 튀지 않고 덜컹거리며 얹혀지도록 피지컬 마찰 계수 대폭 전면 조정
         function updatePhysicsLoop() {
-            const gravity = 0.95; // 2번 수정: 중력 가속도 상향 (더 묵직하고 빠르게 낙하)
-            const floorY = 645;   // 부스 하단 바닥 경계선 위치
+            const gravity = 0.5; // 중력 강도를 살짝 낮춰 안정감 부여
+            const floorY = 645;   
 
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 
-                // 가속도 및 위치 연산
                 p.vy += gravity;
                 p.x += p.vx;
                 p.y += p.vy;
                 p.angle += p.va;
 
-                // 공기 저항 감쇄 감속
-                p.vx *= 0.98;
-                p.va *= 0.96;
+                // 공기 저항 감속 및 에너지 소실 비율 증가 (묵직하게 만듦)
+                p.vx *= 0.94;
+                p.vy *= 0.96;
+                p.va *= 0.92;
 
-                // 부스 좌우 외벽 프레임 충돌 바운스 처리
-                if (p.x < 55) { p.x = 55; p.vx = -p.vx * 0.4; p.va *= -0.5; }
-                if (p.x > 365) { p.x = 365; p.vx = -p.vx * 0.4; p.va *= -0.5; }
+                // 부스 좌우 외벽 프레임 안쪽 마찰력 상향
+                if (p.x < 65) { p.x = 65; p.vx = -p.vx * 0.1; p.va *= -0.2; }
+                if (p.x > 355) { p.x = 355; p.vx = -p.vx * 0.1; p.va *= -0.2; }
 
-                // 부스 하단 원목 선반 바닥 마찰 및 충돌 처리
+                // 바닥 충돌 처리 ➡️ 반발 탄성 계수를 0.02로 죽여서 튀지 않고 덜컹 안착하게 제어
                 if (p.y > floorY) {
                     p.y = floorY;
-                    p.vy = -p.vy * 0.15; // 바닥 충돌 시 살짝 통 튕김
-                    p.vx *= 0.5;
-                    p.va *= 0.4;
+                    p.vy = -p.vy * 0.02; // 거의 튕기지 않음
+                    p.vx *= 0.6;        // 바닥 마찰 슬라이딩 댐핑
+                    p.va *= 0.3;
                 }
 
-                // 2번 핵심 수정: 글자 오브젝트 간 상호 실시간 충돌 및 산형 적층 연산
+                // 1번 핵심 수정: 글자 상호 간 충돌 시 유령처럼 뚫거나 폭발하지 않고 덜컹 얹혀지는 소프트 스태킹 연산
                 for (let j = 0; j < particles.length; j++) {
                     if (i === j) continue;
                     let other = particles[j];
@@ -327,30 +338,27 @@
                     let hDist = Math.abs(dx);
                     let vDist = Math.abs(dy);
 
-                    // 설정된 가로/세로 볼륨을 침범할 경우 (오브제 투과 방지)
-                    if (hDist < (p.radiusH + other.radiusH) * 0.75 && vDist < (p.radiusV + other.radiusV) * 1.1) {
-                        // 세로축 반발력 제공 (밀어내며 밀착)
-                        if (vDist > 0) {
-                            p.y += (dy > 0 ? 1 : -1) * 1.5;
-                            p.vy = (dy > 0 ? 1 : -1) * Math.abs(p.vy) * 0.2;
-                        }
-                        // 가로축 반발력 제공 (옆으로 흩어지며 무작위로 산처럼 쌓임)
-                        if (hDist > 0) {
-                            p.x += (dx > 0 ? 1 : -1) * 2.0;
-                            p.vx = (dx > 0 ? 1 : -1) * Math.abs(p.vx) * 0.3;
-                            p.va += dx * 0.15; // 부딪힐 때 회전 모멘텀 가중
-                        }
+                    let minH = (p.radiusH + other.radiusH) * 0.65;
+                    let minV = (p.radiusV + other.radiusV) * 0.85;
+
+                    if (hDist < minH && vDist < minV) {
+                        // 강하게 튕겨내지 않고 밀도 수정을 통해 스르륵 포개지도록 위치 점진적 보정
+                        p.x += dx * 0.04;
+                        p.y += dy * 0.06;
+                        
+                        // 충돌하는 순간 속도 에너지를 상호 대폭 흡수하여 안착 유도 (덜컹거리는 뉘앙스)
+                        p.vx = (p.vx + other.vx) * 0.25;
+                        p.vy = (p.vy + other.vy) * 0.25;
+                        p.va *= 0.5;
                     }
                 }
 
-                // 동역학 연산값을 실제 HTML DOM 요소 좌표계에 실시간 사상
                 p.el.style.top = p.y + 'px';
                 p.el.style.left = p.x + 'px';
                 p.el.style.transform = `translate(-50%, -50%) rotate(${p.angle}deg)`;
             }
 
-            // 부하 방지를 위한 최대 입자 한계 제어 (45개 넘으면 오래된 것 소멸)
-            if (particles.length > 45) {
+            if (particles.length > 50) {
                 const dead = particles.shift();
                 if(dead && dead.el.parentNode) dead.el.parentNode.removeChild(dead.el);
             }
@@ -358,7 +366,6 @@
             requestAnimationFrame(updatePhysicsLoop);
         }
 
-        // 브라우저 렌더링 프레임 루프 가동
         requestAnimationFrame(updatePhysicsLoop);
     </script>
 </body>
