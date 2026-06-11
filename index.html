@@ -15,6 +15,24 @@
             height: 100vh;
             margin: 0;
             overflow: hidden; 
+            position: relative;
+        }
+
+        /* 📝 해결 사항: 왼쪽 상단에 전시 서문처럼 배치되는 Helvetica 11px 300 영문 문단 */
+        .project-statement {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: 300px; /* 스크린 레이아웃을 해치지 않는 슬림한 열 너비 */
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 300; /* 초슬림 굵기 */
+            font-size: 11px; /* 11px 명세 고정 */
+            line-height: 1.65;
+            color: #7c7c7c; /* 미드톤 서적들과 톤을 맞춘 차분한 실버 그레이 */
+            text-align: justify;
+            z-index: 5; /* 부스에 가려지지 않는 배경 레이어 */
+            letter-spacing: 0.5px;
+            margin: 0;
         }
 
         /* 거대 도서관 책 선반 프레임 */
@@ -69,7 +87,7 @@
         .w-reg  { width: 58px; }
         .w-wide { width: 78px; }
 
-        /* 명도 조절된 미드톤 그레이 스케일 서적 */
+        /* 조도 보존 처리된 미드톤 그레이 스케일 */
         .c-1 { background-color: #2b2b2b; } 
         .c-2 { background-color: #383838; }
         .c-3 { background-color: #454545; }
@@ -78,7 +96,7 @@
         .c-6 { background-color: #6e6e6e; }
         .c-7 { background-color: #7c7c7c; } 
 
-        /* 상단 아치형 공중전화부스 장서 */
+        /* 상단 아치형 루프 구조 전화부스 장서 */
         .booth-book-unit { 
             width: 420px; 
             height: 700px; 
@@ -93,7 +111,18 @@
             flex-direction: column;
             align-items: center;
             padding: 40px 25px 25px 25px;
-            overflow: hidden;
+            overflow: hidden; 
+        }
+
+        /* 부스 내부에 삽입되는 실제 프로토타입 사진 스타일 (어둡게 처리하여 조도 가독성 확보) */
+        .booth-photo {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; 
+            filter: brightness(0.2) contrast(1.1); 
+            z-index: 1; 
+            pointer-events: none; 
+            box-shadow: inset 0 0 50px rgba(0,0,0,1); 
         }
 
         /* 항상 순수 검정 배경 유지 TELEPHONE 전구 박스 */
@@ -134,6 +163,7 @@
             flex-direction: column;
             align-items: center;
             z-index: 10;
+            opacity: 0.1; 
         }
 
         h1 { font-size: 19px; margin: 0 0 4px 0; font-weight: 300; letter-spacing: 2px; text-align: center; color: #fff; }
@@ -153,7 +183,6 @@
             text-align: center;
         }
 
-        /* 얇은 Helvetica 300 코인 버튼 */
         .btn-token { 
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
@@ -176,12 +205,12 @@
             position: absolute;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             font-weight: 300; 
-            font-size: 15px; /* 👈 2번 수정: 폰트 크기를 14px로 대폭 키워 가독성 상향 */
+            font-size: 14px; 
             color: #ffffff; 
             letter-spacing: 1px;
             white-space: nowrap;
             pointer-events: none;
-            z-index: 2;
+            z-index: 2; 
             transform-origin: center center;
         }
 
@@ -189,6 +218,12 @@
     </style>
 </head>
 <body>
+
+    <p class="project-statement">
+        By placing a "red telephone booth book" among achromatic volumes symbolizing a bleak library, this webpage visualizes the covert liberation and sanctuary of students hidden within the suffocating silence. The interior background is an actual photograph of the intervention site.<br><br>
+        The mechanism where fragments of comforting dialogue rattle down and stack like a mountain each time a token is inserted symbolizes the process in which invisible moments of solace and solidarity pile up to form a vast, "living archive."<br><br>
+        The Easter egg, where all traces vanish like a mirage upon touching the surrounding monochrome books, exposes the overwhelming rules of the library that enforce absolute silence, while paradoxically proving the existence of "phone refugees" hidden behind that quietude in the most dramatic and poetic manner.
+    </p>
 
     <div class="giant-shelf">
         
@@ -205,6 +240,8 @@
 
         <div class="booth-book-unit" id="boothBook">
             
+            <img class="booth-photo" src="phone_refugees.jpg" alt="Prototype in Situ">
+
             <div class="booth-sign">
                 <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N</span><span class="letter">E</span>
             </div>
@@ -238,35 +275,20 @@
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
-        /* 📞 1번 수정: 전화 통화의 흐름이 느껴지도록 질문과 답변의 비중을 정확히 1:1(6개 대 6개)로 맞춤 조율 */
         const phoneWords = [
-            // 안부 묻는 질문 (Questions - 6개)
-            "How have you been?",
-            "Are you doing okay?",
-            "How's everything over there?",
-            "Are you getting enough sleep?",
-            "How's your week going?",
-            "Everything good with you?",
-            
-            // 안부 답하는 표현 (Answers - 6개)
-            "I'm doing well. And you?",
-            "Same old, same old.",
-            "Surviving, barely.",
-            "Just hanging in there.",
-            "Exhausted but okay.",
-            "Just need a break."
+            "How have you been?", "Are you doing okay?", "How's everything over there?",
+            "Are you getting enough sleep?", "How's your week going?", "Everything good with you?",
+            "I'm doing well. And you?", "Same old, same old.", "Surviving, barely.",
+            "Just hanging in there.", "Exhausted but okay.", "Just need a break."
         ];
-        
         let particles = [];
 
-        // 페이지 진입 시 기존 텍스트 무덤 복원
         window.addEventListener('DOMContentLoaded', () => {
             let savedParticles = localStorage.getItem('phoneParticles') ? JSON.parse(localStorage.getItem('phoneParticles')) : [];
             savedParticles.forEach(sp => {
                 reconstructParticle(sp.text, sp.x, sp.y, sp.angle);
             });
             
-            // 주변의 흑백 책 클릭 시 마스터 리셋 수행 (전체 고요화 이스터 에그)
             document.querySelectorAll('.giant-book').forEach(book => {
                 book.addEventListener('click', () => {
                     currentCount = 0;
@@ -296,7 +318,6 @@
             alert("🪙 Clink! You made it through another day.");
         }
 
-        // 3의 배수로 불이 켜지며, 28번째에 무한 루프 도는 연산 유지
         function updateLights(count) {
             const letters = document.querySelectorAll('.letter');
             
@@ -318,17 +339,9 @@
             booth.appendChild(el);
             
             particles.push({
-                el: el,
-                text: txt,
-                x: 210 + (Math.random() * 16 - 8), 
-                y: 110,                             
-                vx: Math.random() * 1 - 0.5,          
-                vy: 15, 
-                angle: Math.random() * 8 - 4,     
-                va: Math.random() * 2 - 1,          
-                radiusH: 60, /* 14px 글자 스케일에 맞춘 최적의 가로 충돌 크기 반경 고정 */
-                radiusV: 14, /* 14px 글자 스케일에 맞춘 최적의 세로 충돌 크기 반경 고정 */
-                isSleeping: false            
+                el: el, text: txt, x: 210 + (Math.random() * 16 - 8), y: 110,                             
+                vx: Math.random() * 1 - 0.5, vy: 15, angle: Math.random() * 8 - 4, va: Math.random() * 2 - 1,          
+                radiusH: 60, radiusV: 14, isSleeping: false            
             });
         }
 
@@ -343,10 +356,7 @@
             booth.appendChild(el);
             
             particles.push({
-                el: el,
-                text: text,
-                x: x, y: y, vx: 0, vy: 0, angle: angle, va: 0,
-                radiusH: 60, radiusV: 14
+                el: el, text: text, x: x, y: y, vx: 0, vy: 0, angle: angle, va: 0, radiusH: 60, radiusV: 14
             });
         }
 
@@ -359,59 +369,37 @@
                 
                 if (p.isSleeping) continue;
                 
-                p.vy += gravity;
-                p.x += p.vx;
-                p.y += p.vy;
-                p.angle += p.va;
-
-                p.vx *= 0.90;
-                p.vy *= 0.92;
-                p.va *= 0.88;
+                p.vy += gravity; p.x += p.vx; p.y += p.vy; p.angle += p.va;
+                p.vx *= 0.90; p.vy *= 0.92; p.va *= 0.88;
 
                 if (p.x < 70) { p.x = 70; p.vx = -p.vx * 0.1; }
                 if (p.x > 350) { p.x = 350; p.vx = -p.vx * 0.1; }
 
                 if (p.y > floorY) {
-                    p.y = floorY;
-                    p.vy = -p.vy * 0.02; 
-                    p.vx *= 0.05;        
-                    p.va *= 0.05;        
-                    p.isSleeping = true;
+                    p.y = floorY; p.vy = -p.vy * 0.02; p.vx *= 0.05; p.va *= 0.05; p.isSleeping = true;
                 }
 
                 for (let j = 0; j < particles.length; j++) {
                     if (i === j) continue;
                     let other = particles[j];
 
-                    let dx = p.x - other.x;
-                    let dy = p.y - other.y;
-                    let hDist = Math.abs(dx);
-                    let vDist = Math.abs(dy);
-
-                    let minH = (p.radiusH + other.radiusH) * 0.62;
-                    let minV = 17; /* 14px 글씨 크기에 비례하여 겹침 방지 간격 고도화 */
+                    let dx = p.x - other.x; let dy = p.y - other.y;
+                    let hDist = Math.abs(dx); let vDist = Math.abs(dy);
+                    let minH = (p.radiusH + other.radiusH) * 0.62; let minV = 15; 
 
                     if (hDist < minH && vDist < minV) {
-                        let overlapX = minH - hDist;
-                        let overlapY = minV - vDist;
+                        let overlapX = minH - hDist; let overlapY = minV - vDist;
 
                         if (overlapY < overlapX) {
-                            if (dy > 0) {
-                                p.y += overlapY * 0.15; 
-                            } else {
-                                p.y -= overlapY * 0.15;
-                            }
-                            p.vy *= 0.3; 
-                            p.vx += dx * 0.01; 
+                            if (dy > 0) p.y += overlapY * 0.15; else p.y -= overlapY * 0.15;
+                            p.vy *= 0.3; p.vx += dx * 0.01; 
                         } else {
-                            p.x += (dx > 0 ? 1 : -1) * overlapX * 0.1;
-                            p.vx *= 0.2;
+                            p.x += (dx > 0 ? 1 : -1) * overlapX * 0.1; p.vx *= 0.2;
                         }
                     }
                 }
 
-                p.el.style.top = p.y + 'px';
-                p.el.style.left = p.x + 'px';
+                p.el.style.top = p.y + 'px'; p.el.style.left = p.x + 'px';
                 p.el.style.transform = `translate(-50%, -50%) rotate(${p.angle}deg)`;
             }
 
