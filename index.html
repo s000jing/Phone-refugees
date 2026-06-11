@@ -69,7 +69,7 @@
         .w-reg  { width: 58px; }
         .w-wide { width: 78px; }
 
-        /* 컨펌된 명도의 미드톤 그레이 스케일 */
+        /* 조도 유지 처리된 미드톤 그레이 스케일 서적 */
         .c-1 { background-color: #2b2b2b; } 
         .c-2 { background-color: #383838; }
         .c-3 { background-color: #454545; }
@@ -176,7 +176,7 @@
             position: absolute;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             font-weight: 300; 
-            font-size: 13px;
+            font-size: 11px;
             color: #ffffff; 
             letter-spacing: 1px;
             white-space: nowrap;
@@ -233,7 +233,7 @@
     </div>
 
     <script>
-        // 새로고침 시 이어서 사용할 수 있는 영구 누적 메커니즘
+        // 새로고침 해도 토큰과 흔적이 완벽히 누적되어 이어짐
         let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
         
         document.getElementById('count').innerText = currentCount;
@@ -248,44 +248,52 @@
         
         let particles = [];
 
-        // 페이지 로드 시 기존 글자 무덤 완벽 복구
+        // 페이지 진입 시 저장되어 있던 기존 텍스트 무덤 완벽 복원
         window.addEventListener('DOMContentLoaded', () => {
             let savedParticles = localStorage.getItem('phoneParticles') ? JSON.parse(localStorage.getItem('phoneParticles')) : [];
             savedParticles.forEach(sp => {
                 reconstructParticle(sp.text, sp.x, sp.y, sp.angle);
+            });
+            
+            // 💡 이스터 에그 매핑: 주변의 흑백 책 중 아무거나 클릭하면 아카이브 '마스터 리셋' 수행
+            document.querySelectorAll('.giant-book').forEach(book => {
+                book.addEventListener('click', () => {
+                    currentCount = 0;
+                    localStorage.removeItem('tokenCount');
+                    localStorage.removeItem('phoneParticles');
+                    
+                    document.getElementById('count').innerText = currentCount;
+                    updateLights(currentCount);
+                    
+                    document.querySelectorAll('.falling-typo').forEach(el => el.remove());
+                    particles = [];
+                    
+                    alert("🤫 Shh... The library returns to absolute silence. Everything has been reset.");
+                });
             });
         });
 
         function dropToken() {
             currentCount += 1;
             
-            // TELEPHONE 완점(63개 초과) 시에만 초기화
-            if (currentCount > 63) {
-                currentCount = 0;
-                document.querySelectorAll('.falling-typo').forEach(el => el.remove());
-                particles = [];
-                localStorage.removeItem('tokenCount');
-                localStorage.removeItem('phoneParticles');
-                document.getElementById('count').innerText = currentCount;
-                updateLights(currentCount);
-                alert("☎️ TELEPHONE is fully illuminated! The archive loops back to 0.");
-                return;
-            }
-            
+            // 💡 변경 사항: 9글자가 다 차도 초기화(삭제) 코드는 완전 삭제함. 토큰과 대화는 무한 누적됨.
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
-            updateLights(currentCount);
             
-            if (currentCount > 0) {
-                spawnPhysicsTypo(); 
-            }
+            updateLights(currentCount);
+            spawnPhysicsTypo(); 
             
             alert("🪙 Clink! You made it through another day.");
         }
 
+        // 💡 변경 사항: 3개씩 불이 들어오며, 27개(다 켜짐) 이후 28번째에 불만 다 꺼지고 다시 루프 도는 연산
         function updateLights(count) {
             const letters = document.querySelectorAll('.letter');
-            let litCount = Math.floor(count / 7); 
+            
+            // 27개에서 다 켜진 후, 28번째 토큰이 투입되는 순간 불만 다 다시 꺼지게 처리 (% 28 연산)
+            let effectiveCount = count % 28; 
+            let litCount = Math.floor(effectiveCount / 3); 
+            
             letters.forEach((letter, index) => {
                 if (index < litCount) letter.classList.add('active');
                 else letter.classList.remove('active');
@@ -354,16 +362,16 @@
                 if (p.x < 70) { p.x = 70; p.vx = -p.vx * 0.1; }
                 if (p.x > 350) { p.x = 350; p.vx = -p.vx * 0.1; }
 
-                /* 🛠️ 수정 핵심: 바닥 마찰력 극대화 제어 (0.6 ➡️ 0.05) */
+                // 쫀득하고 덜컹거리며 안착하는 바닥 마찰 피지컬 바인딩
                 if (p.y > floorY) {
                     p.y = floorY;
                     p.vy = -p.vy * 0.02; 
-                    p.vx *= 0.05;        /* 👈 바닥에 닿자마자 미끄러짐을 완벽하게 차단 */
-                    p.va *= 0.05;        /* 👈 회전하며 구르는 현상 최소화 */
+                    p.vx *= 0.05;        
+                    p.va *= 0.05;        
                     p.isSleeping = true;
                 }
 
-                // 타 글자체 오브제와의 안정적인 포개짐 연산
+                // 글자 상호 간 겹침 방지 및 부드러운 산형 밀어내기 연산
                 for (let j = 0; j < particles.length; j++) {
                     if (i === j) continue;
                     let other = particles[j];
@@ -382,12 +390,12 @@
 
                         if (overlapY < overlapX) {
                             if (dy > 0) {
-                                p.y += overlapY * 0.05; 
+                                p.y += overlapY * 0.15; 
                             } else {
-                                p.y -= overlapY * 0.05;
+                                p.y -= overlapY * 0.15;
                             }
                             p.vy *= 0.3; 
-                            p.vx += dx * 0.005; /* 옆으로 과하게 미끄러지지 않도록 가로 분산력 억제 */
+                            p.vx += dx * 0.01; 
                         } else {
                             p.x += (dx > 0 ? 1 : -1) * overlapX * 0.1;
                             p.vx *= 0.2;
