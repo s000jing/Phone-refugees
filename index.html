@@ -33,7 +33,7 @@
             background: linear-gradient(180deg, #1f140a, #0d0804); 
         }
 
-        /* 좌우 균형 1:1 매칭 수평 고정 */
+        /* 좌우 균형 1:1 대칭 매칭 정중앙 고정 */
         .book-group {
             flex-grow: 1;
             flex-basis: 0;
@@ -69,7 +69,7 @@
         .w-reg  { width: 58px; }
         .w-wide { width: 78px; }
 
-        /* 조도 보존 처리된 미드톤 그레이 스케일 */
+        /* 컨펌된 명도의 미드톤 그레이 스케일 */
         .c-1 { background-color: #2b2b2b; } 
         .c-2 { background-color: #383838; }
         .c-3 { background-color: #454545; }
@@ -78,7 +78,7 @@
         .c-6 { background-color: #6e6e6e; }
         .c-7 { background-color: #7c7c7c; } 
 
-        /* 상단 아치형 루프 구조 전화부스 장서 */
+        /* 상단 아치형 공중전화부스 장서 */
         .booth-book-unit { 
             width: 420px; 
             height: 700px; 
@@ -171,12 +171,12 @@
         }
         .btn-token:active { transform: translateY(1px); }
 
-        /* 실시간 물리 엔진용 타이포 사양 (Thin White 300 고정) */
+        /* 실시간 자연스러운 댐핑 물리용 타이포 사양 (Thin White 300) */
         .falling-typo {
             position: absolute;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             font-weight: 300; 
-            font-size: 12px;
+            font-size: 11px;
             color: #ffffff; 
             letter-spacing: 1px;
             white-space: nowrap;
@@ -233,52 +233,54 @@
     </div>
 
     <script>
-        // 무한 누적 활성화 상태 유지
+        // 2번 수정: 새로고침해도 절대 초기화되지 않고 안전하게 기존 토큰 로드
         let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
         
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
-        /* 📞 변경 사항: 영어로 안부를 묻고 답하는 감성 표현 리스트로 전면 교체 */
         const phoneWords = [
-            "I'm doing well. And you?",
-            "Same old, same old.",
-            "Not too bad, thanks.",
-            "Surviving, barely.",
-            "Could be better.",
-            "Just hanging in there.",
-            "Exhausted but okay.",
-            "Pretty good, actually.",
-            "Missing home a bit.",
-            "Just need a break.",
-            "Hang on, talk tomorrow.",
-            "Yeah, I'm staying up."
+            "I'm doing well. And you?", "Same old, same old.", "Not too bad, thanks.",
+            "Surviving, barely.", "Could be better.", "Just hanging in there.",
+            "Exhausted but okay.", "Pretty good, actually.", "Missing home a bit.",
+            "Just need a break.", "Hang on, talk tomorrow.", "Yeah, I'm staying up."
         ];
         
         let particles = [];
 
+        // 페이지 로드 시, 이전에 저장된 단어들의 위치 상태가 있다면 복구하여 화면에 이어서 배치
+        window.addEventListener('DOMContentLoaded', () => {
+            let savedParticles = localStorage.getItem('phoneParticles') ? JSON.parse(localStorage.getItem('phoneParticles')) : [];
+            savedParticles.forEach(sp => {
+                reconstructParticle(sp.text, sp.x, sp.y, sp.angle);
+            });
+        });
+
         function dropToken() {
             currentCount += 1;
             
+            // 2번 수정: 완점 달성(63개 초과) 시에만 브라우저 데이터 전체 강제 리셋 포맷
             if (currentCount > 63) {
                 currentCount = 0;
                 document.querySelectorAll('.falling-typo').forEach(el => el.remove());
                 particles = [];
+                localStorage.removeItem('tokenCount');
+                localStorage.removeItem('phoneParticles');
+                document.getElementById('count').innerText = currentCount;
+                updateLights(currentCount);
                 alert("☎️ TELEPHONE is fully illuminated! The archive loops back to 0.");
+                return;
             }
             
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
-            
             updateLights(currentCount);
             
             if (currentCount > 0) {
                 spawnPhysicsTypo(); 
             }
             
-            if (currentCount !== 0) {
-                alert("🪙 Clink! You made it through another day.");
-            }
+            alert("🪙 Clink! You made it through another day.");
         }
 
         function updateLights(count) {
@@ -294,57 +296,75 @@
             const booth = document.getElementById('boothBook');
             const el = document.createElement('div');
             el.className = 'falling-typo';
-            el.innerText = phoneWords[Math.floor(Math.random() * phoneWords.length)];
+            let txt = phoneWords[Math.floor(Math.random() * phoneWords.length)];
+            el.innerText = txt;
             booth.appendChild(el);
             
             particles.push({
                 el: el,
-                /* 중앙 적층 유도: 스폰되는 가로 범위를 중앙(215px) 부근으로 좁혀 산 모양 스태킹 유도 */
-                x: 210 + (Math.random() * 20 - 10), 
+                text: txt,
+                x: 210 + (Math.random() * 16 - 8), // 완벽한 산형 적층을 위해 정중앙 드롭폭 압축
                 y: 110,                             
-                vx: Math.random() * 1 - 0.5, // 가로로 날아가지 않게 초기 속도 최소화
-                vy: 14,                      // 속도 상향: 위에서 톡! 하고 스피디하게 낙하
+                vx: Math.random() * 1 - 0.5,          
+                vy: 15, // 1번 수정: 자연스러운 중력 작용을 받으며 신속하게 톡! 낙하
                 angle: Math.random() * 8 - 4,     
-                va: Math.random() * 1 - 0.5,          
-                radiusH: el.offsetWidth ? el.offsetWidth / 2 : 50,                        
-                radiusV: 9,
-                isSleeping: false            // 진동 방지용 고정 상태 스위치
+                va: Math.random() * 2 - 1,          
+                radiusH: 55, // 글자 가로 감지 영역
+                radiusV: 12  // 글자 높이 감지 영역
             });
         }
 
-        /* 🛠️ 핵심 변경 사항: 진동 현상을 원천 차단하고 부드러운 산형 적층을 보장하는 물리 루프 */
+        // 새로고침 시 기존 단어 더미 유지를 위한 구조체 재건 함수
+        function reconstructParticle(text, x, y, angle) {
+            const booth = document.getElementById('boothBook');
+            const el = document.createElement('div');
+            el.className = 'falling-typo';
+            el.innerText = text;
+            el.style.top = y + 'px';
+            el.style.left = x + 'px';
+            el.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+            booth.appendChild(el);
+            
+            particles.push({
+                el: el,
+                text: text,
+                x: x, y: y, vx: 0, vy: 0, angle: angle, va: 0,
+                radiusH: 55, radiusV: 12
+            });
+        }
+
+        // 1번 수정: 진동을 없애고 중력 기반의 자연스러운 탄성과 미끄러짐을 구현한 댐핑 엔진
         function updatePhysicsLoop() {
-            const gravity = 0.8; 
-            const floorY = 650;   
+            const gravity = 0.55; // 1번 수정: 중력 가속도 기본 반영
+            const floorY = 655;   
 
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 
-                // 이미 안전하게 안착한(Sleep) 글자는 계산을 스킵하여 진동을 원천 배제
-                if (p.isSleeping) continue;
-                
+                // 가속도 운동 반영
                 p.vy += gravity;
                 p.x += p.vx;
                 p.y += p.vy;
                 p.angle += p.va;
 
-                // 물리 댐핑 감속 강화 (쫀득하게 안착하도록 마찰력 부여)
-                p.vx *= 0.92;
-                p.vy *= 0.94;
-                p.va *= 0.90;
+                // 자연스러운 안착 유도를 위한 속도 저항 댐핑 감쇄
+                p.vx *= 0.90;
+                p.vy *= 0.92;
+                p.va *= 0.88;
 
-                // 외벽 바운스 마찰
-                if (p.x < 70) { p.x = 70; p.vx = 0; p.va = 0; }
-                if (p.x > 350) { p.x = 350; p.vx = 0; p.va = 0; }
+                // 좌우 외벽 프레임 충돌 저항
+                if (p.x < 70) { p.x = 70; p.vx = -p.vx * 0.1; }
+                if (p.x > 350) { p.x = 350; p.vx = -p.vx * 0.1; }
 
-                // 바닥 도착 시 튕기지 않고 그 자리에 부드럽게 락(Sleep) 걸기
-                if (p.y >= floorY) {
+                // 바닥 충돌 시 중력 작용 하에 부드럽게 '놓이도록' 처리
+                if (p.y > floorY) {
                     p.y = floorY;
-                    p.vx = 0; p.vy = 0; p.va = 0;
-                    p.isSleeping = true;
+                    p.vy = -p.vy * 0.05; // 튀지 않고 덜컥 주저앉음
+                    p.vx *= 0.6;
+                    p.va *= 0.4;
                 }
 
-                // 타 글자체 오브제와의 안정적인 포개짐(Stacking) 연산
+                // 1번 수정: 글자 오브젝트 간 중력 기반 소프트 밀어내기 (진동 현상 완전 소멸)
                 for (let j = 0; j < particles.length; j++) {
                     if (i === j) continue;
                     let other = particles[j];
@@ -354,39 +374,47 @@
                     let hDist = Math.abs(dx);
                     let vDist = Math.abs(dy);
 
-                    // 텍스트 상자 충돌 가이드라인
-                    let minH = (p.radiusH + other.radiusH) * 0.7;
-                    let minV = 16; // 얇은 헬베티카 폰트 높이 한계선
+                    let minH = (p.radiusH + other.radiusH) * 0.62;
+                    let minV = 15; 
 
+                    // 두 글자가 겹치는 상황 발생 시
                     if (hDist < minH && vDist < minV) {
-                        // 떨어지던 글자가 아래에 있는 글자(other)의 머리 위에 닿았을 때
-                        if (p.y < other.y) {
-                            p.y = other.y - minV; // 덜컹거리며 정교하게 위에 얹힘
-                            
-                            // 아래 글자가 이미 고정 상태이고 낙하 속도가 줄어들었다면 함께 수면(Sleep) 모드 진입
-                            if (p.vy > 0) {
-                                p.vy = 0;
-                                p.vx *= 0.3;
-                                p.va *= 0.3;
-                                
-                                if (Math.abs(p.vy) < 0.2 && Math.abs(p.vx) < 0.2) {
-                                    p.vx = 0; p.vy = 0; p.va = 0;
-                                    p.isSleeping = true;
-                                }
+                        let overlapX = minH - hDist;
+                        let overlapY = minV - vDist;
+
+                        // 중력 방향(세로축)을 우선하여 겹친 만큼 미세하고 부드럽게 스프링식 밀어내기 연산
+                        if (overlapY < overlapX) {
+                            if (dy > 0) {
+                                p.y += overlapY * 0.15; // 부드럽게 위로 밀려 얹어짐
+                            } else {
+                                p.y -= overlapY * 0.15;
                             }
+                            p.vy *= 0.3; // 충돌 에너지 흡수
+                            p.vx += dx * 0.02; // 산 모양을 만들기 위해 옆으로 살짝 미끄러짐 효과
+                        } else {
+                            // 가로축 겹침 최소화 분산
+                            p.x += (dx > 0 ? 1 : -1) * overlapX * 0.1;
+                            p.vx *= 0.4;
                         }
                     }
                 }
 
-                // 렌더링 좌표 동기화
+                // 화면 좌표 갱신
                 p.el.style.top = p.y + 'px';
                 p.el.style.left = p.x + 'px';
                 p.el.style.transform = `translate(-50%, -50%) rotate(${p.angle}deg)`;
             }
 
+            // 부하 관리 및 글자 더미 세이브 상태 업데이트
             if (particles.length > 55) {
                 const dead = particles.shift();
                 if(dead && dead.el.parentNode) dead.el.parentNode.removeChild(dead.el);
+            }
+
+            // 2번 수정: 실시간 움직임 위치를 저장소에 기록하여 새로고침 시 완벽 복구 보장
+            if (particles.length > 0 && Math.random() < 0.05) { // 연산 최적화를 주기적 저장
+                let stateArray = particles.map(p => ({text: p.text, x: p.x, y: p.y, angle: p.angle}));
+                localStorage.setItem('phoneParticles', JSON.stringify(stateArray));
             }
 
             requestAnimationFrame(updatePhysicsLoop);
