@@ -5,106 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAIST Phone Refugees</title>
     <style>
-        /* 기본 배경 및 폰트 설정 (Helvetica 유지) */
+        /* 완벽한 블랙 배경, 화면 스크롤 제거 */
         body { 
             background-color: #000000; 
             color: #fff; 
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            align-items: flex-end; /* 모든 책과 부스를 화면 바닥에 정렬 */
+            height: 100vh;
             margin: 0;
             overflow: hidden; 
         }
 
-        /* 📚 거대한 도서관 책장 프레임 (3D 입체감) */
-        .library-frame {
-            width: 90%;
-            max-width: 1200px;
-            height: 80vh;
-            background: linear-gradient(135deg, #1f140a, #0f0a05); /* 깊은 원목 톤 */
-            border: 12px solid #2d1e13;
-            border-radius: 20px;
-            box-shadow: 
-                0 30px 60px rgba(0,0,0,0.8),
-                inset 0 0 40px rgba(0,0,0,0.9);
+        /* 📚 가로로 화면을 100% 꽉 채우는 거대 책 선반 (원목 바닥 느낌) */
+        .giant-shelf {
+            width: 100vw;
+            height: 720px; /* 부스 높이(680px)를 수용하는 선반 높이 */
             display: flex;
+            align-items: flex-end;
             justify-content: center;
-            align-items: center; /* 세로 중앙 정렬로 전화부스 칸 노출 */
+            border-bottom: 24px solid #2d1e13; /* 화면 맨 밑을 꽉 채우는 두꺼운 책장 나무 프레임 */
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.8);
             position: relative;
-        }
-
-        /* 🪟 전화부스가 들어있는 '한 칸' (책 선반) */
-        .special-shelf {
-            width: 100%;
-            display: flex;
-            align-items: flex-end; /* 모든 요소를 선반 바닥에 맞춤 */
-            justify-content: center;
-            padding: 0 40px;
             box-sizing: border-box;
-            position: relative;
         }
 
-        /* 선반 나무 바닥 (3D 입체감) */
-        .special-shelf::after {
-            content: '';
-            position: absolute;
-            bottom: -15px; /* 선반 나무 두께 */
-            left: 20px; right: 20px;
-            height: 15px;
-            background: linear-gradient(180deg, #3d291a, #1f140a);
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        /* 선반 안쪽 뒷벽 그림자 연출 */
-        .shelf-shadow-top {
-            position: absolute;
-            top: 20px; left: 20px; right: 20px; height: 30px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
-            pointer-events: none;
-        }
-
-        /* 📖 좌우로 주루룩 꽂힌 일반 서적들 */
-        .book-row {
+        /* 📖 좌우로 빽빽하게 화면 끝까지 차오르는 거대 서적 컨테이너 */
+        .book-group {
             flex: 1;
             display: flex;
             align-items: flex-end;
-            gap: 2px;
-            padding-bottom: 5px; /* 선반 바닥에서 살짝 띄움 */
-            max-width: 300px;
-            opacity: 0.4; /* 전화부스를 돋보이게 */
+            gap: 2px; /* 책끼리 빈틈없이 붙도록 유격 최소화 */
+            overflow: hidden;
+            opacity: 0.25; /* 전화부스 서적이 돋보이도록 주변 서적은 딥하게 톤다운 */
+            transition: opacity 0.3s ease;
+        }
+        .book-group:hover {
+            opacity: 0.45; /* 마우스 올리면 은은하게 도서관 책들이 드러남 */
         }
         
-        /* 모바일에서는 책 숨기기 */
-        @media (max-width: 900px) {
-            .book-row { display: none; }
+        .book-group.left { justify-content: flex-end; }
+        .book-group.right { justify-content: flex-start; }
+
+        /* 거대 서적 공통 스타일 (부스 크기와 유사하도록 600px 이상의 거대 크기) */
+        .giant-book {
+            flex-shrink: 0;
+            border-radius: 6px 6px 0 0;
+            box-shadow: 
+                inset 5px 0 7px rgba(255,255,255,0.03), 
+                inset -5px 0 7px rgba(0,0,0,0.6);
         }
 
-        /* 서적 공통 스타일 */
-        .book {
-            display: inline-block;
-            border-radius: 3px 3px 0 0;
-            box-shadow: inset 3px 0 5px rgba(255,255,255,0.05), inset -3px 0 5px rgba(0,0,0,0.4);
-        }
+        /* 680px 부스 서적과 높이가 전반적으로 유사한 높이 바리에이션 */
+        .h-max  { height: 680px; }
+        .h-tall { height: 660px; }
+        .h-mid  { height: 640px; }
+        .h-low  { height: 620px; }
 
-        /* 서적 컬러 스키마 (Muted tone) */
-        .b-deepblue  { background-color: #1a365d; width: 18px; height: 220px; }
-        .b-darkgreen { background-color: #164e63; width: 22px; height: 250px; }
-        .b-wine      { background-color: #5b21b6; width: 15px; height: 180px; }
-        .b-brown     { background-color: #78350f; width: 24px; height: 230px; }
-        .b-slate     { background-color: #475569; width: 20px; height: 200px; }
-        .b-navy      { background-color: #171717; width: 16px; height: 240px; }
+        /* 책 두께(너비) 바리에이션 */
+        .w-thin { width: 40px; }
+        .w-reg  { width: 55px; }
+        .w-wide { width: 75px; }
 
-        /* 📞 책처럼 꽂힌 커다란 빨간색 전화부스 (주인공) */
-        .booth-as-book { 
-            width: 420px; /* 기존 부스 너비 유지 */
-            height: 680px;
+        /* 도서관 특유의 무겁고 아카이브된 컬러 칩 */
+        .c-navy      { background-color: #0f172a; }
+        .c-darkgreen { background-color: #064e3b; }
+        .c-wine      { background-color: #4c1d95; }
+        .c-brown     { background-color: #451a03; }
+        .c-slate     { background-color: #334155; }
+        .c-deepblue  { background-color: #1e3a8a; }
+        .c-charcoal  { background-color: #171717; }
+
+        /* 📞 책장에 함께 꽂힌 '한 권의 거대한 책'이 된 전화부스 */
+        .booth-book { 
+            width: 420px; 
+            height: 680px; /* 거대 서적들과 완벽히 매칭되는 패널 높이 */
             background: linear-gradient(180deg, #2a0808, #000000);
-            border: 16px solid #dc2626; /* 거대한 빨간 프레임 */
-            border-radius: 20px; 
-            box-shadow: 0 0 50px rgba(220, 38, 38, 0.3), inset 0 0 40px rgba(0, 0, 0, 1); 
+            border: 16px solid #dc2626; /* 강렬한 빨간색 서적 표지 프레임 */
+            border-radius: 12px 12px 0 0; /* 책 윗부분 라운딩 느낌 */
+            box-shadow: 0 0 60px rgba(220, 38, 38, 0.35), inset 0 0 40px rgba(0, 0, 0, 1); 
             padding: 40px 25px;
             box-sizing: border-box;
             display: flex;
@@ -112,8 +92,8 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
-            z-index: 10; /* 책들보다 위에 */
-            margin: 0 20px; /* 양옆 책들과의 간격 */
+            z-index: 10; /* 양옆 책들 위로 그림자가 덮이도록 최상위 레이어 설정 */
+            margin: 0 4px;
         }
 
         /* 전화 타이포 레이어 */
@@ -140,7 +120,7 @@
             to { opacity: 0.35; transform: scale(1); }
         }
 
-        /* 얇은 폰트 두께 반영 완료 */
+        /* 세련되고 얇은 Helvetica 타이포 디자인 */
         h1 { 
             font-size: 20px; 
             margin: 0 0 6px 0; 
@@ -207,7 +187,7 @@
             margin-bottom: 25px;
         }
 
-        /* 얇은 두께 반영 완료 */
+        /* 얇은 가독성의 버튼 스타일 */
         .btn-token { 
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
@@ -229,36 +209,55 @@
 </head>
 <body>
 
-    <div class="library-frame">
-        <div class="shelf-shadow-top"></div>
+    <div class="giant-shelf">
+        
+        <div class="book-group left">
+            <div class="giant-book h-mid w-reg c-navy"></div>
+            <div class="giant-book h-tall w-thin c-wine"></div>
+            <div class="giant-book h-max w-wide c-brown"></div>
+            <div class="giant-book h-low w-reg c-slate"></div>
+            <div class="giant-book h-tall w-wide c-darkgreen"></div>
+            <div class="giant-book h-mid w-thin c-charcoal"></div>
+            <div class="giant-book h-max w-reg c-deepblue"></div>
+            <div class="giant-book h-low w-wide c-wine"></div>
+            <div class="giant-book h-tall w-thin c-brown"></div>
+            <div class="giant-book h-mid w-reg c-slate"></div>
+            <div class="giant-book h-max w-wide c-navy"></div>
+            <div class="giant-book h-low w-thin c-darkgreen"></div>
+            <div class="giant-book h-tall w-reg c-charcoal"></div>
+        </div>
 
-        <div class="special-shelf">
+        <div class="booth-book">
+            <div id="word-layer"></div> 
+
+            <div class="booth-sign">
+                <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N</span><span class="letter">E</span>
+            </div>
             
-            <div class="book-row">
-                <div class="book b-deepblue"></div><div class="book b-darkgreen"></div><div class="book b-wine"></div><div class="book b-brown"></div><div class="book b-slate"></div><div class="book b-navy"></div>
+            <div class="phone-machine">
+                <h1>KAIST PHONE REFUGEES</h1>
+                <div class="subtitle">STAIRWELL CALL STATION</div>
+                <div class="display">🪙 TOKENS: <span id="count">0</span></div>
+                <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
+                <div class="hint">Check in your call.</div>
             </div>
+            <div style="color: #444; font-size: 10px; font-weight: 300; letter-spacing: 2px; z-index: 10;">VOL. 1: THE REFUGEE</div>
+        </div>
 
-            <div class="booth-as-book">
-                <div id="word-layer"></div> 
-
-                <div class="booth-sign">
-                    <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N</span><span class="letter">E</span>
-                </div>
-                
-                <div class="phone-machine">
-                    <h1>KAIST PHONE REFUGEES</h1>
-                    <div class="subtitle">STAIRWELL CALL STATION</div>
-                    <div class="display">🪙 TOKENS: <span id="count">0</span></div>
-                    <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
-                    <div class="hint">Check in your call.</div>
-                </div>
-                <div style="color: #444; font-size: 10px; font-weight: 300; letter-spacing: 2px; z-index: 10;">THE REFUGEE'S BOOK</div>
-            </div>
-
-            <div class="book-row">
-                <div class="book b-navy"></div><div class="book b-slate"></div><div class="book b-wine"></div><div class="book b-brown"></div><div class="book b-darkgreen"></div><div class="book b-deepblue"></div>
-            </div>
-
+        <div class="book-group right">
+            <div class="giant-book h-tall w-reg c-charcoal"></div>
+            <div class="giant-book h-max w-wide c-deepblue"></div>
+            <div class="giant-book h-low w-thin c-wine"></div>
+            <div class="giant-book h-mid w-reg c-brown"></div>
+            <div class="giant-book h-tall w-wide c-slate"></div>
+            <div class="giant-book h-low w-thin c-darkgreen"></div>
+            <div class="giant-book h-max w-reg c-navy"></div>
+            <div class="giant-book h-mid w-wide c-wine"></div>
+            <div class="giant-book h-tall w-thin c-charcoal"></div>
+            <div class="giant-book h-max w-reg c-brown"></div>
+            <div class="giant-book h-low w-wide c-deepblue"></div>
+            <div class="giant-book h-tall w-thin c-slate"></div>
+            <div class="giant-book h-mid w-reg c-darkgreen"></div>
         </div>
 
     </div>
@@ -268,7 +267,6 @@
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
 
-        // 전화 소리 파편 단어들
         const phoneWords = ["RING", "HELLO?", "CONNECTED", "VOICE", "WHISPER", "SIGH", "BYE", "HEARING YOU", "CALLING"];
 
         function dropToken() {
