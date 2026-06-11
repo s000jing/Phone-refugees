@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KAIST Phone Refugees</title>
     <style>
-        /* 배경 검은색 유지 및 폰트를 Helvetica로 전면 교체 */
         body { 
             background-color: #000000; 
             color: #fff; 
@@ -15,21 +14,87 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            overflow: hidden; 
+        }
+
+        /* 책장과 부스를 아우르는 전체 도서관 레이아웃 고정 */
+        .library-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        /* 빨간색 공중전화부스 내부 투시 프레임 */
+        /* 📚 양옆 도서관 책장 스타일 */
+        .bookshelf {
+            width: 220px;
+            height: 640px;
+            background: linear-gradient(180deg, #181008, #0a0604); /* 깊은 원목 톤 */
+            border: 8px solid #2d1e13;
+            border-radius: 15px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px 10px;
+            box-sizing: border-box;
+            opacity: 0.35; /* 부스를 돋보이게 하기 위해 책장은 은은하게 배경 처리 */
+            transition: opacity 0.3s ease;
+        }
+        
+        /* 마우스를 올리면 도서관 책장이 조금 더 선명해짐 */
+        .bookshelf:hover {
+            opacity: 0.6;
+        }
+
+        /* 책장 한 칸 */
+        .shelf {
+            flex: 1;
+            border-bottom: 5px solid #3d291a; /* 선반 나무 두께 */
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 2px;
+            overflow: hidden;
+            gap: 2px;
+        }
+
+        /* 서적 공통 스타일 (CSS로 구현한 입체감) */
+        .book {
+            display: inline-block;
+            border-radius: 3px 3px 0 0;
+            box-shadow: 
+                inset 3px 0 5px rgba(255,255,255,0.05), 
+                inset -3px 0 5px rgba(0,0,0,0.4);
+        }
+
+        /* 다양한 서적들의 높이, 너비, 컬러 크리에이티브 대비 */
+        .b-deepblue  { background-color: #1e3a8a; width: 18px; height: 85%; }
+        .b-darkgreen { background-color: #14532d; width: 22px; height: 95%; }
+        .b-wine      { background-color: #581c87; width: 15px; height: 75%; }
+        .b-brown     { background-color: #7c2d12; width: 24px; height: 90%; }
+        .b-slate     { background-color: #475569; width: 20px; height: 80%; }
+        .b-navy      { background-color: #1e1b4b; width: 16px; height: 88%; }
+        .b-cream     { background-color: #dfd5c6; width: 19px; height: 92%; }
+
+        /* 🚨 모바일 스크린 환경에서는 책장을 숨기고 부스만 깔끔하게 노출 */
+        @media (max-width: 900px) {
+            .bookshelf { display: none; }
+            .library-container { justify-content: center; }
+        }
+
+        /* 기존 공중전화부스 스타일 */
         .booth { 
             width: 100%;
             max-width: 420px; 
             height: 680px;
-            background: linear-gradient(180deg, #3a0d0d, #1a0505);
+            background: linear-gradient(180deg, #2a0808, #000000);
             border: 16px solid #dc2626; 
-            border-radius: 30px; 
-            box-shadow: 
-                0 0 50px rgba(220, 38, 38, 0.3),
-                inset 0 0 30px rgba(0, 0, 0, 0.9); 
+            border-radius: 40px; 
+            box-shadow: 0 0 50px rgba(220, 38, 38, 0.2), inset 0 0 40px rgba(0, 0, 0, 1); 
             padding: 40px 25px;
             box-sizing: border-box;
             display: flex;
@@ -37,172 +102,207 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
+            z-index: 1;
         }
 
-        /* 부스 상단 내부 유리창 틀 장식 */
-        .booth-window {
+        #word-layer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 100% 80px;
-            pointer-events: none; 
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 2;
         }
 
-        /* TELEPHONE 내부 간판 */
+        .floating-word {
+            position: absolute;
+            font-weight: 200; 
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 0.35; transform: scale(1); }
+        }
+
+        h1 { 
+            font-size: 20px; 
+            margin: 0 0 6px 0; 
+            font-weight: 200; 
+            letter-spacing: 2px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .subtitle { 
+            color: #737373; 
+            font-size: 11px; 
+            margin: 0 0 25px 0; 
+            font-weight: 300; 
+            letter-spacing: 1px;
+            text-align: center;
+            z-index: 10;
+        }
+
         .booth-sign {
             background-color: #110303;
             width: 100%;
             text-align: center;
             padding: 14px 0;
-            border-radius: 10px;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);
+            border-radius: 12px;
             display: flex;
             justify-content: center;
             gap: 6px;
-            z-index: 5;
+            z-index: 10;
         }
 
         .letter {
-            font-weight: 400;
-            font-size: 26px;
-            letter-spacing: 1px;
+            font-weight: 900;
+            font-size: 24px;
             color: #3a1515; 
             transition: all 0.3s ease;
         }
 
-        /* 7개마다 불 켜지는 네온 효과 */
         .letter.active {
             color: #ffcc00; 
-            text-shadow: 0 0 12px #ffbb00, 0 0 25px #ff7700;
+            text-shadow: 0 0 12px #ffbb00;
         }
 
-        /* 아날로그 전화기 본체 */
         .phone-machine {
             width: 90%;
-            background: linear-gradient(135deg, #262626, #171717);
+            background: rgba(23, 23, 23, 0.85);
+            backdrop-filter: blur(5px);
             border-radius: 25px;
             padding: 30px 20px;
-            box-sizing: border-box;
-            box-shadow: 
-                0 15px 35px rgba(0,0,0,0.7), 
-                inset 0 2px 4px rgba(255,255,255,0.1);
-            border: 3px solid #404040;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid #333;
             text-align: center;
-            z-index: 5;
-            margin-bottom: 20px;
+            z-index: 10;
         }
 
-        h1 { font-size: 22px; margin: 0 0 6px 0; font-weight: 400; letter-spacing: -0.5px; }
-        .subtitle { color: #737373; font-size: 13px; margin: 0 0 25px 0; font-weight: 500; }
-
-        /* 토큰 디스플레이 (가독성을 위해 폰트 유지) */
         .display { 
             background-color: #022c22; 
-            border: 2px solid #065f46;
+            border: 1px solid #065f46;
             border-radius: 12px;
             padding: 16px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 28px; 
-            font-weight: bold; 
+            font-family: 'Courier New', monospace;
+            font-size: 26px; 
             color: #34d399; 
             margin-bottom: 25px;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.8);
-            text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
         }
 
-        /* 황금빛 동전 투입 버튼 */
         .btn-token { 
             background: linear-gradient(135deg, #fbbf24, #d97706);
             color: #000; 
-            border: 2px solid #b45309; 
+            border: none; 
             width: 100%;
             padding: 18px 0; 
-            font-size: 18px; 
-            font-weight: 450; 
+            font-size: 16px; 
+            font-weight: 300; 
             border-radius: 12px; 
             cursor: pointer; 
-            transition: all 0.15s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 10; 
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
-        .btn-token:hover { 
-            transform: translateY(-2px); 
-            background: linear-gradient(135deg, #fef08a, #f59e0b);
-            box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3);
-        }
-        .btn-token:active { 
-            transform: translateY(1px); 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            z-index: 20;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            letter-spacing: 1px;
         }
 
-        .hint {
-            color: #525252;
-            font-size: 12px;
-            margin-top: 15px;
-            letter-spacing: 0.5px;
-        }
+        .btn-token:active { transform: translateY(1px); }
+        .hint { color: #525252; font-size: 10px; margin-top: 15px; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
-    <div class="booth">
-        <div class="booth-window"></div>
-
-        <div class="booth-sign" id="signBoard">
-            <span class="letter">T</span>
-            <span class="letter">E</span>
-            <span class="letter">L</span>
-            <span class="letter">E</span>
-            <span class="letter">P</span>
-            <span class="letter">H</span>
-            <span class="letter">O</span>
-            <span class="letter">N</span>
-            <span class="letter">E</span>
-        </div>
+    <div class="library-container">
         
-        <div class="phone-machine">
-            <h1>KAIST PHONE REFUGEES</h1>
-            <div class="subtitle">Final Exam Escape Station</div>
-            
-            <div class="display">🪙 TOKENS: <span id="count">0</span></div>
-            
-            <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
-            
-            <div class="hint">Drop a token to check in your escape.</div>
+        <div class="bookshelf">
+            <div class="shelf">
+                <div class="book b-deepblue"></div><div class="book b-slate"></div><div class="book b-brown"></div><div class="book b-navy"></div><div class="book b-cream"></div>
+            </div>
+            <div class="shelf">
+                <div class="book b-wine"></div><div class="book b-deepblue"></div><div class="book b-cream"></div><div class="book b-slate"></div><div class="book b-darkgreen"></div>
+            </div>
+            <div class="shelf">
+                <div class="book b-brown"></div><div class="book b-navy"></div><div class="book b-wine"></div><div class="book b-deepblue"></div><div class="book b-slate"></div>
+            </div>
+            <div class="shelf">
+                <div class="book b-slate"></div><div class="book b-cream"></div><div class="book b-darkgreen"></div><div class="book b-brown"></div><div class="book b-navy"></div>
+            </div>
         </div>
 
-        <div style="color: #525252; font-size: 11px; font-weight: 600; letter-spacing: 2px;">Calling...</div>
+        <div class="booth">
+            <div id="word-layer"></div> 
+
+            <div class="booth-sign">
+                <span class="letter">T</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span><span class="letter">P</span><span class="letter">H</span><span class="letter">O</span><span class="letter">N</span><span class="letter">E</span>
+            </div>
+            
+            <div class="phone-machine">
+                <h1>KAIST PHONE REFUGEES</h1>
+                <div class="subtitle">STAIRWELL CALL STATION</div>
+                <div class="display">🪙 TOKENS: <span id="count">0</span></div>
+                <button class="btn-token" onclick="dropToken()">INSERT TOKEN</button>
+                <div class="hint">Check in your call.</div>
+            </div>
+            <div style="color: #444; font-size: 10px; font-weight: 300; letter-spacing: 2px; z-index: 10;">INSIDE THE BOOTH</div>
+        </div>
+
+        <div class="bookshelf">
+            <div class="shelf">
+                <div class="book b-wine"></div><div class="book b-brown"></div><div class="book b-cream"></div><div class="book b-darkgreen"></div><div class="book b-slate"></div>
+            </div>
+            <div class="shelf">
+                <div class="book b-navy"></div><div class="book b-deepblue"></div><div class="book b-slate"></div><div class="book b-wine"></div><div class="book b-brown"></div>
+            </div>
+            <div class="shelf">
+                <div class="book b-cream"></div><div class="book b-darkgreen"></div><div class="book b-navy"></div><div class="book b-brown"></div><div class="book b-deepblue"></div>
+            </div>
+            <div class="shelf">
+                <div class="book b-deepblue"></div><div class="book b-wine"></div><div class="book b-slate"></div><div class="book b-cream"></div><div class="book b-darkgreen"></div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         let currentCount = localStorage.getItem('tokenCount') ? parseInt(localStorage.getItem('tokenCount')) : 0;
-        
         document.getElementById('count').innerText = currentCount;
         updateLights(currentCount);
+
+        const phoneWords = ["RING", "HELLO?", "CONNECTED", "VOICE", "WHISPER", "SIGH", "BYE", "HEARING YOU", "CALLING"];
 
         function dropToken() {
             currentCount += 1;
             document.getElementById('count').innerText = currentCount;
             localStorage.setItem('tokenCount', currentCount);
-            
             updateLights(currentCount);
-            
+            createPhoneWordParticle();
             alert("🪙 Clink! You made it through another day.");
         }
 
         function updateLights(count) {
             const letters = document.querySelectorAll('.letter');
             let litCount = Math.floor(count / 7); 
-            
             letters.forEach((letter, index) => {
-                if (index < litCount) {
-                    letter.classList.add('active');
-                } else {
-                    letter.classList.remove('active');
-                }
+                if (index < litCount) letter.classList.add('active');
+                else letter.classList.remove('active');
             });
+        }
+
+        function createPhoneWordParticle() {
+            const layer = document.getElementById('word-layer');
+            const span = document.createElement('span');
+            span.innerText = phoneWords[Math.floor(Math.random() * phoneWords.length)];
+            span.className = 'floating-word';
+            span.style.left = Math.random() * 85 + 5 + '%';
+            span.style.top = Math.random() * 85 + 5 + '%';
+            layer.appendChild(span);
+
+            if(layer.children.length > 35) {
+                layer.removeChild(layer.firstChild);
+            }
         }
     </script>
 </body>
